@@ -5,6 +5,7 @@ Current implementation covers:
   - SP-1: trajectory direction of selected object relative to ego vehicle.
   - SP-2: spatial relationship of selected object relative to ego vehicle.
   - SP-3: approximate distance between selected object and ego vehicle.
+  - SP-3a: approximate metric distance between selected object and ego vehicle.
   - SP-4: lane position of selected object relative to ego lane.
   - SP-5: object occlusion state.
   - SP-6: whether object is on road/sidewalk/above ground.
@@ -528,6 +529,12 @@ def infer_sp3_choice(
         choice = "E"
 
     return choice, {"distance_xy": distance_xy, "distance_3d": distance_3d}
+
+
+def infer_sp3a_answer(sp3_metrics: Dict[str, float]) -> Tuple[str, Dict[str, float]]:
+    """Return a short free-response metric distance answer for SP-3a."""
+    distance_xy = float(sp3_metrics.get("distance_xy", 0.0))
+    return f"{distance_xy:.1f} m", {"distance_xy_m": distance_xy}
 
 
 def infer_sp4_choice(
@@ -1969,6 +1976,7 @@ def main() -> None:
     sp1_template = None
     sp2_template = None
     sp3_template = None
+    sp3a_template = None
     sp4_template = None
     sp5_template = None
     sp6_template = None
@@ -1999,6 +2007,8 @@ def main() -> None:
             sp2_template = task
         elif task.get("id") == "SP-3":
             sp3_template = task
+        elif task.get("id") == "SP-3a":
+            sp3a_template = task
         elif task.get("id") == "SP-4":
             sp4_template = task
         elif task.get("id") == "SP-5":
@@ -2051,6 +2061,8 @@ def main() -> None:
         raise ValueError("SP-2 task not found in questions.json")
     if sp3_template is None:
         raise ValueError("SP-3 task not found in questions.json")
+    if sp3a_template is None:
+        raise ValueError("SP-3a task not found in questions.json")
     if sp4_template is None:
         raise ValueError("SP-4 task not found in questions.json")
     if sp5_template is None:
@@ -2102,6 +2114,7 @@ def main() -> None:
     sp1_results = []
     sp2_results = []
     sp3_results = []
+    sp3a_results = []
     sp4_results = []
     sp5_results = []
     sp6_results = []
@@ -2228,6 +2241,21 @@ def main() -> None:
             "source_group_file": str(path.relative_to(formatted_dir)),
         }
         sp3_results.append(sp3_row)
+
+        sp3a_answer, sp3a_metrics = infer_sp3a_answer(sp3_metrics)
+        sp3a_row = {
+            "scene_id": payload["scene_id"],
+            "group_id": payload["group_id"],
+            "question_id": "SP-3a",
+            "object_id": selected_token,
+            "object_reference": object_ref,
+            "question": sp3a_template["question"].replace("<obj>", object_ref),
+            "ground_truth": sp3a_answer,
+            "model_response": "",
+            "metrics": {k: round(v, 4) for k, v in sp3a_metrics.items()},
+            "source_group_file": str(path.relative_to(formatted_dir)),
+        }
+        sp3a_results.append(sp3a_row)
 
         sp4_choice, sp4_metrics = infer_sp4_choice(
             selected_ann_token=selected_token,
@@ -2830,6 +2858,7 @@ def main() -> None:
             "SP-1": {"count": len(sp1_results), "results": sp1_results},
             "SP-2": {"count": len(sp2_results), "results": sp2_results},
             "SP-3": {"count": len(sp3_results), "results": sp3_results},
+            "SP-3a": {"count": len(sp3a_results), "results": sp3a_results},
             "SP-4": {"count": len(sp4_results), "results": sp4_results},
             "SP-5": {"count": len(sp5_results), "results": sp5_results},
             "SP-6": {"count": len(sp6_results), "results": sp6_results},
@@ -2864,6 +2893,7 @@ def main() -> None:
     generated_sp1_tasks = []
     generated_sp2_tasks = []
     generated_sp3_tasks = []
+    generated_sp3a_tasks = []
     generated_sp4_tasks = []
     generated_sp5_tasks = []
     generated_sp6_tasks = []
@@ -2917,6 +2947,16 @@ def main() -> None:
         task["group_id"] = row["group_id"]
         task["source_group_file"] = row["source_group_file"]
         generated_sp3_tasks.append(task)
+    for row in sp3a_results:
+        task = copy.deepcopy(sp3a_template)
+        task["object_id"] = row["object_id"]
+        task["object_reference"] = row["object_reference"]
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_sp3a_tasks.append(task)
     for row in sp4_results:
         task = copy.deepcopy(sp4_template)
         task["object_id"] = row["object_id"]
@@ -3161,6 +3201,10 @@ def main() -> None:
             "count": len(generated_sp3_tasks),
             "tasks": generated_sp3_tasks,
         },
+        "SP-3a": {
+            "count": len(generated_sp3a_tasks),
+            "tasks": generated_sp3a_tasks,
+        },
         "SP-4": {
             "count": len(generated_sp4_tasks),
             "tasks": generated_sp4_tasks,
@@ -3261,6 +3305,7 @@ def main() -> None:
     print(f"Generated SP-1 answers: {len(sp1_results)}")
     print(f"Generated SP-2 answers: {len(sp2_results)}")
     print(f"Generated SP-3 answers: {len(sp3_results)}")
+    print(f"Generated SP-3a answers: {len(sp3a_results)}")
     print(f"Generated SP-4 answers: {len(sp4_results)}")
     print(f"Generated SP-5 answers: {len(sp5_results)}")
     print(f"Generated SP-6 answers: {len(sp6_results)}")

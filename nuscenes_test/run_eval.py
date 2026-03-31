@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 from datetime import datetime
@@ -217,6 +218,34 @@ def extract_answer_key(raw_text: str, choices: dict[str, Any] | None = None) -> 
     return None
 
 
+def extract_numeric_meters(raw_text: str) -> float | None:
+    """Extract the first numeric distance value in meters from model output."""
+    text = raw_text.strip()
+    if not text:
+        return None
+
+    try:
+        payload = json.loads(text)
+        if isinstance(payload, dict):
+            for key in ("answer", "distance", "value"):
+                val = payload.get(key)
+                if isinstance(val, (int, float)):
+                    return float(val)
+                if isinstance(val, str):
+                    text = val.strip()
+                    break
+    except Exception:
+        pass
+
+    match = re.search(r"[-+]?\d*\.?\d+", text)
+    if not match:
+        return None
+    try:
+        return float(match.group(0))
+    except ValueError:
+        return None
+
+
 def main() -> None:
     args = parse_args()
     if not args.tasks.exists():
@@ -253,6 +282,7 @@ def main() -> None:
     correct_mcq = 0
     baseline_sum = 0.0
     per_task_stats: dict[str, dict[str, Any]] = {}
+    numeric_task_stats: dict[str, dict[str, Any]] = {}
     for idx, task in enumerate(tasks, start=1):
         try:
             image_paths = resolve_context_images(task, args.formatted_scenes_dir, group_cache)
@@ -268,6 +298,10 @@ def main() -> None:
             choices = task.get("choices", {})
             ground_truth = str(task.get("ground_truth", "")).strip().upper()
             predicted_key = extract_answer_key(raw_text, choices=choices)
+            predicted_value = None
+            ground_truth_value = None
+            absolute_error = None
+            squared_error = None
             is_correct = None
             random_baseline = None
 
@@ -302,6 +336,23 @@ def main() -> None:
                     bucket["model_answer_distribution"][pred_key] = (
                         bucket["model_answer_distribution"].get(pred_key, 0) + 1
                     )
+            elif question_id == "SP-3a":
+                predicted_value = extract_numeric_meters(raw_text)
+                ground_truth_value = extract_numeric_meters(str(task.get("ground_truth", "")))
+                if predicted_value is not None and ground_truth_value is not None:
+                    absolute_error = abs(predicted_value - ground_truth_value)
+                    squared_error = (predicted_value - ground_truth_value) ** 2
+                    bucket = numeric_task_stats.setdefault(
+                        question_id,
+                        {
+                            "count": 0.0,
+                            "sum_abs_error": 0.0,
+                            "sum_sq_error": 0.0,
+                        },
+                    )
+                    bucket["count"] += 1.0
+                    bucket["sum_abs_error"] += absolute_error
+                    bucket["sum_sq_error"] += squared_error
 
             result = {
                 "id": question_id,
@@ -313,8 +364,12 @@ def main() -> None:
                 "object_reference": task.get("object_reference"),
                 "model_response": raw_text,
                 "predicted_option": predicted_key,
+                "predicted_value": predicted_value,
                 "ground_truth": ground_truth if ground_truth else None,
+                "ground_truth_value": ground_truth_value,
                 "is_correct": is_correct,
+                "absolute_error": absolute_error,
+                "squared_error": squared_error,
                 "random_baseline": random_baseline,
             }
             results.append(result)
@@ -344,6 +399,17 @@ def main() -> None:
             "model_answer_distribution": stats["model_answer_distribution"],
         }
 
+    numeric_task_summary: dict[str, dict[str, Any]] = {}
+    for task_id, stats in numeric_task_stats.items():
+        count = max(stats["count"], 1.0)
+        mse = stats["sum_sq_error"] / count
+        numeric_task_summary[task_id] = {
+            "count": stats["count"],
+            "mae": stats["sum_abs_error"] / count,
+            "rmse": math.sqrt(mse),
+            "mse": mse,
+        }
+
     overall_accuracy = (float(correct_mcq) / float(total_mcq)) if total_mcq > 0 else None
     overall_random_baseline = (baseline_sum / float(total_mcq)) if total_mcq > 0 else None
 
@@ -359,6 +425,7 @@ def main() -> None:
             "accuracy": overall_accuracy,
             "random_guess_baseline": overall_random_baseline,
             "per_task_metrics": per_task_summary,
+            "numeric_metrics": numeric_task_summary,
         },
         "results": results,
     }

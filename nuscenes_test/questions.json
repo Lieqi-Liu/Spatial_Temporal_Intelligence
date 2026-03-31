@@ -53,6 +53,15 @@
         "model_response": ""
       },
       {
+        "id": "SP-3a",
+        "task": "space-perception",
+        "question_format": "FRQ",
+        "object_id": "<obj>",
+        "question": "What is the approximate distance in meters between <obj> and the ego vehicle?",
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
         "id": "SP-4",
         "task": "space-perception",
         "question_format": "MCQ",
