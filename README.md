@@ -59,7 +59,7 @@ The benchmark currently covers the following task families:
 | Time Extrapolation | `TE-1` to `TE-6` | Object/ego-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Future object motion, collision timing, future lane occupancy, ego response, likely next event, short-horizon scene evolution |
 | Time Memory | `TM-1` to `TM-6` | Object/scene-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Disappeared objects, previous object location, recent motion trend, previous occlusion, earlier lane position, temporal summary |
 | Scene Context | `SP-C-1` to `SP-C-6` | Scene-level | Past 5 stitched 360 frames | MCQ + FRQ | Weather, lighting/time of day, road typology, scene density, scene-level risk, holistic environment description |
-| Ego Trajectory Prediction | `TRJ-1` to `TRJ-6` | Ego-level | Past 5 stitched 360 frames | MCQ + FRQ | Future maneuver, future endpoint region, future speed trend, 5-step future path, conditional 4-step continuation, natural-language future path description |
+| Ego Trajectory Prediction | `TRJ-1` to `TRJ-7` | Ego-level | Past 5 stitched 360 frames | MCQ + FRQ | Past maneuver summary, future maneuver, future endpoint region, future speed trend, 5-step future path, conditional 4-step continuation, natural-language future path description |
 
 Additional notes:
 
@@ -67,7 +67,7 @@ Additional notes:
 - Scene-level tasks do not use bbox highlighting.
 - Trajectory tasks use the past 5 frames as context, but their labels come from the next 5 future frames after the current anchor frame.
 - Distance questions are explicitly included in `SP-3` and `SP-3a`.
-- Trajectory questions are explicitly included in `TRJ-1` to `TRJ-6`.
+- Trajectory questions are explicitly included in `TRJ-1` to `TRJ-7`.
 
 ## End-To-End Flow
 
@@ -136,17 +136,21 @@ What it does:
   - `questions_with_answers_all.json`
 
 Trajectory prediction details:
-- `TRJ-1`, `TRJ-2`, `TRJ-3` are MCQ tasks.
-- `TRJ-4`, `TRJ-5`, `TRJ-6` are FRQ tasks.
+- `TRJ-1`, `TRJ-2`, `TRJ-3`, `TRJ-4` are MCQ tasks.
+- `TRJ-5`, `TRJ-6`, `TRJ-7` are FRQ tasks.
 - All `TRJ-*` labels use the next 5 future frames after the current anchor frame.
 - The trajectory GT is stored in ego-centric local coordinates.
-- `TRJ-4` predicts the full next 5 future points.
-- `TRJ-5` is a conditional continuation task: the first future point is given, and the model predicts the following 4 points.
-- `TRJ-6` is a natural-language future-path description task.
-- The `TRJ-6` ground truth is generated automatically from the same future 5-frame trajectory by first deriving:
-  - maneuver (`TRJ-1`)
-  - endpoint region (`TRJ-2`)
-  - speed trend (`TRJ-3`)
+- `TRJ-1` summarizes the ego vehicle's maneuver over the past 5 input frames.
+- `TRJ-2` predicts the future maneuver.
+- `TRJ-3` predicts the future endpoint region.
+- `TRJ-4` predicts the future speed trend.
+- `TRJ-5` predicts the full next 5 future points.
+- `TRJ-6` is a conditional continuation task: the first future point is given, and the model predicts the following 4 points.
+- `TRJ-7` is a natural-language future-path description task.
+- The `TRJ-7` ground truth is generated automatically from the same future 5-frame trajectory by first deriving:
+  - maneuver (`TRJ-2`)
+  - endpoint region (`TRJ-3`)
+  - speed trend (`TRJ-4`)
   and then rendering those structured labels into a short textual summary.
 
 ### 4. Run evaluation
@@ -268,7 +272,7 @@ python - <<'PY'
 import json
 with open("./questions_with_answers_all.json") as f:
     data=json.load(f)
-for k in ["TRJ-1", "TRJ-2", "TRJ-3", "TRJ-4", "TRJ-5", "TRJ-6"]:
+for k in ["TRJ-1", "TRJ-2", "TRJ-3", "TRJ-4", "TRJ-5", "TRJ-6", "TRJ-7"]:
     print(k, data["generated_answers"].get(k, {}).get("count"))
 PY
 ```

@@ -39,6 +39,18 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "task": "trajectory-prediction",
             "question_format": "MCQ",
             "question": (
+                "Based on the past 5 consecutive 360-degree multi-camera frames, what best describes the ego "
+                "vehicle's recent maneuver over those past frames?"
+            ),
+            "choices": TRAJ1_CHOICES,
+            "ground_truth": "",
+            "model_response": "",
+        },
+        {
+            "id": "TRJ-2",
+            "task": "trajectory-prediction",
+            "question_format": "MCQ",
+            "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, what is the most likely "
                 "ego-vehicle maneuver over the next 5 future frames (approximately 2.5 seconds)?"
             ),
@@ -47,7 +59,7 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "model_response": "",
         },
         {
-            "id": "TRJ-2",
+            "id": "TRJ-3",
             "task": "trajectory-prediction",
             "question_format": "MCQ",
             "question": (
@@ -60,7 +72,7 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "model_response": "",
         },
         {
-            "id": "TRJ-3",
+            "id": "TRJ-4",
             "task": "trajectory-prediction",
             "question_format": "MCQ",
             "question": (
@@ -72,7 +84,7 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "model_response": "",
         },
         {
-            "id": "TRJ-4",
+            "id": "TRJ-5",
             "task": "trajectory-prediction",
             "question_format": "FRQ",
             "question": (
@@ -85,7 +97,7 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "model_response": "",
         },
         {
-            "id": "TRJ-5",
+            "id": "TRJ-6",
             "task": "trajectory-prediction",
             "question_format": "FRQ",
             "question": (
@@ -99,7 +111,7 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "model_response": "",
         },
         {
-            "id": "TRJ-6",
+            "id": "TRJ-7",
             "task": "trajectory-prediction",
             "question_format": "FRQ",
             "question": (
@@ -155,6 +167,23 @@ def _collect_future_sample_tokens(
     return tokens
 
 
+def _collect_past_sample_tokens(
+    current_sample_token: str,
+    sample_by_token: Dict[str, dict],
+    past_steps: int,
+) -> List[str]:
+    tokens: List[str] = [current_sample_token]
+    cur = current_sample_token
+    for _ in range(past_steps):
+        prv = sample_by_token.get(cur, {}).get("prev")
+        if not prv:
+            break
+        tokens.append(prv)
+        cur = prv
+    tokens.reverse()
+    return tokens
+
+
 def _compute_speed_mps(
     sample_a: dict,
     sample_b: dict,
@@ -167,7 +196,7 @@ def _compute_speed_mps(
     return math.hypot(dx, dy) / dt
 
 
-def _infer_trj1_choice(endpoint_x: float, endpoint_y: float, endpoint_dist: float) -> Tuple[str, str]:
+def _infer_maneuver_choice(endpoint_x: float, endpoint_y: float, endpoint_dist: float) -> Tuple[str, str]:
     if endpoint_dist < 1.0 or endpoint_x < 1.0:
         return "F", "near_stop"
     angle_deg = math.degrees(math.atan2(endpoint_y, endpoint_x))
@@ -220,6 +249,14 @@ def generate_traj_prediction_rows(
     if not current_sample_token or current_sample_token not in sample_by_token:
         return None
 
+    past_sample_tokens = _collect_past_sample_tokens(
+        current_sample_token=current_sample_token,
+        sample_by_token=sample_by_token,
+        past_steps=4,
+    )
+    if len(past_sample_tokens) < 5:
+        return None
+
     future_sample_tokens = _collect_future_sample_tokens(
         current_sample_token=current_sample_token,
         sample_by_token=sample_by_token,
@@ -239,6 +276,20 @@ def generate_traj_prediction_rows(
 
     current_yaw = yaw_from_quaternion_wxyz(current_ego["rotation"])
     current_xy = current_ego["translation"]
+
+    past_start_sample = sample_by_token[past_sample_tokens[0]]
+    past_start_ego = _ego_pose_for_sample(
+        sample_token=past_sample_tokens[0],
+        ego_pose_by_token=ego_pose_by_token,
+        cam_front_sd_by_sample=cam_front_sd_by_sample,
+    )
+    if past_start_ego is None:
+        return None
+    past_start_yaw = yaw_from_quaternion_wxyz(past_start_ego["rotation"])
+    past_dx = float(current_ego["translation"][0]) - float(past_start_ego["translation"][0])
+    past_dy = float(current_ego["translation"][1]) - float(past_start_ego["translation"][1])
+    past_endpoint_x, past_endpoint_y = global_to_local_xy(past_dx, past_dy, past_start_yaw)
+    past_endpoint_dist = math.hypot(past_endpoint_x, past_endpoint_y)
 
     future_local_points: List[List[float]] = []
     future_global_points: List[List[float]] = []
@@ -288,13 +339,16 @@ def generate_traj_prediction_rows(
         future_egos[-1],
     )
 
-    trj1_choice, trj1_reason = _infer_trj1_choice(endpoint_x, endpoint_y, endpoint_dist)
-    trj2_choice, trj2_reason = _infer_trj2_choice(endpoint_x, endpoint_y, endpoint_dist)
-    trj3_choice, trj3_reason = _infer_trj3_choice(current_speed, future_speed, endpoint_dist)
+    trj1_choice, trj1_reason = _infer_maneuver_choice(
+        past_endpoint_x, past_endpoint_y, past_endpoint_dist
+    )
+    trj2_choice, trj2_reason = _infer_maneuver_choice(endpoint_x, endpoint_y, endpoint_dist)
+    trj3_choice, trj3_reason = _infer_trj2_choice(endpoint_x, endpoint_y, endpoint_dist)
+    trj4_choice, trj4_reason = _infer_trj3_choice(current_speed, future_speed, endpoint_dist)
     traj_summary = (
-        f"The ego vehicle is most likely to {TRAJ1_CHOICES[trj1_choice].lower()} over the next 5 future "
-        f"frames, ending in the {TRAJ2_CHOICES[trj2_choice].lower()} with a "
-        f"{TRAJ3_CHOICES[trj3_choice].lower()}."
+        f"The ego vehicle is most likely to {TRAJ1_CHOICES[trj2_choice].lower()} over the next 5 future "
+        f"frames, ending in the {TRAJ2_CHOICES[trj3_choice].lower()} with a "
+        f"{TRAJ3_CHOICES[trj4_choice].lower()}."
     )
 
     common = {
@@ -319,45 +373,64 @@ def generate_traj_prediction_rows(
             **common,
             "question_id": "TRJ-1",
             "question": (
-                "Based on the past 5 consecutive 360-degree multi-camera frames, what is the most likely "
-                "ego-vehicle maneuver over the next 5 future frames (approximately 2.5 seconds)?"
+                "Based on the past 5 consecutive 360-degree multi-camera frames, what best describes the ego "
+                "vehicle's recent maneuver over those past frames?"
             ),
             "choices": TRAJ1_CHOICES,
             "ground_truth": trj1_choice,
             "model_response": "",
             "model_response_text": TRAJ1_CHOICES[trj1_choice],
-            "metrics": {**common["metrics"], "reason": trj1_reason},
+            "metrics": {
+                **common["metrics"],
+                "past_endpoint_x": round(past_endpoint_x, 3),
+                "past_endpoint_y": round(past_endpoint_y, 3),
+                "past_endpoint_distance": round(past_endpoint_dist, 3),
+                "reason": trj1_reason,
+            },
         },
         "TRJ-2": {
             **common,
             "question_id": "TRJ-2",
             "question": (
-                "Based on the past 5 consecutive 360-degree multi-camera frames, at the 5th future frame "
-                "(approximately 2.5 seconds ahead), which relative endpoint region best matches the ego "
-                "vehicle trajectory in the current ego-centric coordinate system?"
+                "Based on the past 5 consecutive 360-degree multi-camera frames, what is the most likely "
+                "ego-vehicle maneuver over the next 5 future frames (approximately 2.5 seconds)?"
             ),
-            "choices": TRAJ2_CHOICES,
+            "choices": TRAJ1_CHOICES,
             "ground_truth": trj2_choice,
             "model_response": "",
-            "model_response_text": TRAJ2_CHOICES[trj2_choice],
+            "model_response_text": TRAJ1_CHOICES[trj2_choice],
             "metrics": {**common["metrics"], "reason": trj2_reason},
         },
         "TRJ-3": {
             **common,
             "question_id": "TRJ-3",
             "question": (
-                "Based on the past 5 consecutive 360-degree multi-camera frames, how does the ego vehicle "
-                "speed trend evolve over the next 5 future frames (approximately 2.5 seconds)?"
+                "Based on the past 5 consecutive 360-degree multi-camera frames, at the 5th future frame "
+                "(approximately 2.5 seconds ahead), which relative endpoint region best matches the ego "
+                "vehicle trajectory in the current ego-centric coordinate system?"
             ),
-            "choices": TRAJ3_CHOICES,
+            "choices": TRAJ2_CHOICES,
             "ground_truth": trj3_choice,
             "model_response": "",
-            "model_response_text": TRAJ3_CHOICES[trj3_choice],
+            "model_response_text": TRAJ2_CHOICES[trj3_choice],
             "metrics": {**common["metrics"], "reason": trj3_reason},
         },
         "TRJ-4": {
             **common,
             "question_id": "TRJ-4",
+            "question": (
+                "Based on the past 5 consecutive 360-degree multi-camera frames, how does the ego vehicle "
+                "speed trend evolve over the next 5 future frames (approximately 2.5 seconds)?"
+            ),
+            "choices": TRAJ3_CHOICES,
+            "ground_truth": trj4_choice,
+            "model_response": "",
+            "model_response_text": TRAJ3_CHOICES[trj4_choice],
+            "metrics": {**common["metrics"], "reason": trj4_reason},
+        },
+        "TRJ-5": {
+            **common,
+            "question_id": "TRJ-5",
             "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, predict the ego vehicle "
                 "trajectory for the next 5 future frames (approximately 2.5 seconds) in the current ego-centric "
@@ -367,9 +440,9 @@ def generate_traj_prediction_rows(
             "ground_truth": json.dumps(future_local_points, ensure_ascii=True),
             "model_response": "",
         },
-        "TRJ-5": {
+        "TRJ-6": {
             **common,
-            "question_id": "TRJ-5",
+            "question_id": "TRJ-6",
             "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, the ego vehicle position at the "
                 "next future frame is already known in the current ego-centric coordinate system as "
@@ -382,9 +455,9 @@ def generate_traj_prediction_rows(
             "ground_truth": json.dumps(future_local_points[1:], ensure_ascii=True),
             "model_response": "",
         },
-        "TRJ-6": {
+        "TRJ-7": {
             **common,
-            "question_id": "TRJ-6",
+            "question_id": "TRJ-7",
             "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, briefly describe the ego "
                 "vehicle's likely future path over the next 5 future frames (approximately 2.5 seconds). "
