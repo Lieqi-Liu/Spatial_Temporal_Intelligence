@@ -41,6 +41,34 @@ For the setup used in this workspace, the dataset root is typically:
 /home/rgao727/Autonomous Driving/NuScenes-QA/data/nuscenes-v1.0-mini
 ```
 
+## Benchmark Overview
+
+All tasks in this benchmark use the same visual input format:
+
+- Temporal context: 5 consecutive frames
+- Per-frame visual view: a stitched 2x3 multi-camera grid
+- Cameras per frame: `CAM_FRONT_LEFT`, `CAM_FRONT`, `CAM_FRONT_RIGHT`, `CAM_BACK_LEFT`, `CAM_BACK`, `CAM_BACK_RIGHT`
+- Effective input to the model: 5 stitched 360-degree multi-camera frames
+
+The benchmark currently covers the following task families:
+
+| Family | IDs | Level | Input View | Question Format | What It Covers |
+| --- | --- | --- | --- | --- | --- |
+| Spatial Perception | `SP-1` to `SP-7` | Object-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Object trajectory direction, relative position, distance, lane position, occlusion, ground-plane status, spatial summary |
+| Spatial Understanding | `SU-1` to `SU-7` | Object/ego-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Constraints on ego, drivable region, risk, lane-change clearance, feasible maneuver, traffic density, scene understanding summary |
+| Time Extrapolation | `TE-1` to `TE-6` | Object/ego-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Future object motion, collision timing, future lane occupancy, ego response, likely next event, short-horizon scene evolution |
+| Time Memory | `TM-1` to `TM-6` | Object/scene-level | Past 5 stitched 360 frames, query object on frame 5 | MCQ + FRQ | Disappeared objects, previous object location, recent motion trend, previous occlusion, earlier lane position, temporal summary |
+| Scene Context | `SP-C-1` to `SP-C-6` | Scene-level | Past 5 stitched 360 frames | MCQ + FRQ | Weather, lighting/time of day, road typology, scene density, scene-level risk, holistic environment description |
+| Ego Trajectory Prediction | `TRJ-1` to `TRJ-6` | Ego-level | Past 5 stitched 360 frames | MCQ + FRQ | Future maneuver, future endpoint region, future speed trend, 5-step future path, conditional 4-step continuation, natural-language future path description |
+
+Additional notes:
+
+- Object-level tasks may use a bbox-highlighted query image on the 5th frame.
+- Scene-level tasks do not use bbox highlighting.
+- Trajectory tasks use the past 5 frames as context, but their labels come from the next 5 future frames after the current anchor frame.
+- Distance questions are explicitly included in `SP-3` and `SP-3a`.
+- Trajectory questions are explicitly included in `TRJ-1` to `TRJ-6`.
+
 ## End-To-End Flow
 
 Run everything from:
@@ -139,39 +167,6 @@ CUDA_VISIBLE_DEVICES=0 python run_eval.py \
   --tensor-parallel-size 1 \
   --max-tasks 50
 ```
-
-## Task Families
-
-### Object-Level
-
-- `SP-*`: spatial perception
-- `SU-*`: spatial understanding
-- `TE-*`: time extrapolation
-- `TM-*`: time memory
-
-These use 5 consecutive 360 multi-camera frames.
-The 5th frame is the anchor frame.
-For object-level tasks, the 5th frame may be replaced with a bbox-highlighted render for the selected object.
-
-### Scene-Level
-
-- `SP-C-*`
-
-These use the same 5-frame context, but do not use object bbox highlighting.
-Scene-level annotations are matched using the original nuScenes scene name such as `scene-0061`.
-
-### Ego Trajectory Prediction
-
-- `TRJ-1`: future maneuver over the next 5 future frames
-- `TRJ-2`: future endpoint region at the 5th future frame
-- `TRJ-3`: future speed trend over the next 5 future frames
-- `TRJ-4`: direct prediction of the next 5 future ego-trajectory points
-- `TRJ-5`: given the first future point, predict the following 4 future ego-trajectory points
-- `TRJ-6`: describe the likely future path in natural language
-
-The current 5 input frames are context only.
-The ground truth comes from the future 5 frames after the anchor frame, not from the current input window.
-The wording for `TRJ-*` explicitly assumes the model uses the past 5 consecutive 360-degree multi-camera frames as context.
 
 ## Script Parameters
 
