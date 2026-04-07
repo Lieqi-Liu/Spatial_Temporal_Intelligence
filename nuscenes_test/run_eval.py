@@ -19,6 +19,10 @@ os.environ["HF_HOME"] = "/local1/lieqiliu/huggingface"
 MAX_IMAGE_PIXELS = 640 * 640
 MAX_MODEL_LEN = 8192
 DEFAULT_MODEL = "Qwen/Qwen3-VL-30B-A3B-Instruct"
+TRAJ_POINT_TASKS = {
+    "TRJ-5": 5,
+    "TRJ-6": 4,
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -287,6 +291,73 @@ def extract_numeric_meters(raw_text: str) -> float | None:
         return None
 
 
+def _coerce_point(point: Any) -> list[float] | None:
+    if not isinstance(point, (list, tuple)) or len(point) != 2:
+        return None
+    try:
+        x = float(point[0])
+        y = float(point[1])
+    except (TypeError, ValueError):
+        return None
+    return [x, y]
+
+
+def extract_traj_points(raw_text: str, expected_len: int) -> list[list[float]] | None:
+    text = raw_text.strip()
+    if not text:
+        return None
+
+    candidates: list[Any] = []
+    try:
+        candidates.append(json.loads(text))
+    except Exception:
+        pass
+
+    if not candidates:
+        start = text.find("[[")
+        end = text.rfind("]]")
+        if start != -1 and end != -1 and end >= start:
+            snippet = text[start : end + 2]
+            try:
+                candidates.append(json.loads(snippet))
+            except Exception:
+                pass
+
+    for candidate in candidates:
+        if isinstance(candidate, dict):
+            for key in ("trajectory", "answer", "points", "prediction"):
+                if key in candidate:
+                    candidate = candidate[key]
+                    break
+
+        if not isinstance(candidate, list) or len(candidate) != expected_len:
+            continue
+
+        points: list[list[float]] = []
+        valid = True
+        for item in candidate:
+            point = _coerce_point(item)
+            if point is None:
+                valid = False
+                break
+            points.append(point)
+        if valid:
+            return points
+    return None
+
+
+def point_distance(a: list[float], b: list[float]) -> float:
+    return math.hypot(a[0] - b[0], a[1] - b[1])
+
+
+def compute_ade(pred: list[list[float]], gt: list[list[float]]) -> float:
+    return sum(point_distance(p, g) for p, g in zip(pred, gt)) / float(len(gt))
+
+
+def compute_fde(pred: list[list[float]], gt: list[list[float]]) -> float:
+    return point_distance(pred[-1], gt[-1])
+
+
 def main() -> None:
     args = parse_args()
     if not args.tasks.exists():
@@ -324,6 +395,7 @@ def main() -> None:
     baseline_sum = 0.0
     per_task_stats: dict[str, dict[str, Any]] = {}
     numeric_task_stats: dict[str, dict[str, Any]] = {}
+    traj_task_stats: dict[str, dict[str, Any]] = {}
     for idx, task in enumerate(tasks, start=1):
         try:
             image_paths = resolve_context_images(task, args.formatted_scenes_dir, group_cache)
@@ -343,6 +415,11 @@ def main() -> None:
             ground_truth_value = None
             absolute_error = None
             squared_error = None
+            predicted_traj = None
+            ground_truth_traj = None
+            traj_ade = None
+            traj_fde = None
+            traj_format_score = None
             is_correct = None
             random_baseline = None
 
@@ -394,6 +471,33 @@ def main() -> None:
                     bucket["count"] += 1.0
                     bucket["sum_abs_error"] += absolute_error
                     bucket["sum_sq_error"] += squared_error
+            elif question_id in TRAJ_POINT_TASKS:
+                expected_len = TRAJ_POINT_TASKS[question_id]
+                predicted_traj = extract_traj_points(raw_text, expected_len=expected_len)
+                gt_raw = task.get("ground_truth", "")
+                gt_text = gt_raw if isinstance(gt_raw, str) else json.dumps(gt_raw)
+                ground_truth_traj = extract_traj_points(gt_text, expected_len=expected_len)
+                traj_format_score = 1.0 if (
+                    predicted_traj is not None and ground_truth_traj is not None
+                ) else 0.0
+                bucket = traj_task_stats.setdefault(
+                    question_id,
+                    {
+                        "count": 0.0,
+                        "valid_count": 0.0,
+                        "format_score_sum": 0.0,
+                        "ade_sum": 0.0,
+                        "fde_sum": 0.0,
+                    },
+                )
+                bucket["count"] += 1.0
+                bucket["format_score_sum"] += traj_format_score
+                if predicted_traj is not None and ground_truth_traj is not None:
+                    traj_ade = compute_ade(predicted_traj, ground_truth_traj)
+                    traj_fde = compute_fde(predicted_traj, ground_truth_traj)
+                    bucket["valid_count"] += 1.0
+                    bucket["ade_sum"] += traj_ade
+                    bucket["fde_sum"] += traj_fde
 
             result = {
                 "id": question_id,
@@ -406,11 +510,16 @@ def main() -> None:
                 "model_response": raw_text,
                 "predicted_option": predicted_key,
                 "predicted_value": predicted_value,
+                "predicted_traj": predicted_traj,
                 "ground_truth": ground_truth if ground_truth else None,
                 "ground_truth_value": ground_truth_value,
+                "ground_truth_traj": ground_truth_traj,
                 "is_correct": is_correct,
                 "absolute_error": absolute_error,
                 "squared_error": squared_error,
+                "traj_ade": traj_ade,
+                "traj_fde": traj_fde,
+                "traj_format_score": traj_format_score,
                 "random_baseline": random_baseline,
             }
             results.append(result)
@@ -451,6 +560,22 @@ def main() -> None:
             "mse": mse,
         }
 
+    traj_task_summary: dict[str, dict[str, Any]] = {}
+    for task_id, stats in traj_task_stats.items():
+        count = max(stats["count"], 1.0)
+        valid_count = max(stats["valid_count"], 1.0)
+        traj_task_summary[task_id] = {
+            "count": stats["count"],
+            "valid_count": stats["valid_count"],
+            "format_score_mean": stats["format_score_sum"] / count,
+            "ade_mean_valid_only": (
+                stats["ade_sum"] / valid_count if stats["valid_count"] > 0 else None
+            ),
+            "fde_mean_valid_only": (
+                stats["fde_sum"] / valid_count if stats["valid_count"] > 0 else None
+            ),
+        }
+
     overall_accuracy = (float(correct_mcq) / float(total_mcq)) if total_mcq > 0 else None
     overall_random_baseline = (baseline_sum / float(total_mcq)) if total_mcq > 0 else None
 
@@ -467,6 +592,7 @@ def main() -> None:
             "random_guess_baseline": overall_random_baseline,
             "per_task_metrics": per_task_summary,
             "numeric_metrics": numeric_task_summary,
+            "trajectory_metrics": traj_task_summary,
         },
         "results": results,
     }
