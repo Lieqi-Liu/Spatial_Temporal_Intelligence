@@ -37,11 +37,36 @@ import copy
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Tuple, TypeVar
 
 from nuscenes.map_expansion.map_api import NuScenesMap
+from traj_prediction_tasks import (
+    generate_traj_prediction_rows,
+    get_traj_prediction_task_templates,
+)
+
+try:
+    from tqdm.auto import tqdm
+except ImportError:
+    tqdm = None
 
 DEFAULT_FRQ_MODEL = "Qwen/Qwen3-VL-30B-A3B-Instruct"
+
+T = TypeVar("T")
+
+
+def progress_iter(items: Iterable[T], *, total: int | None = None, desc: str = "") -> Iterator[T]:
+    if tqdm is not None:
+        yield from tqdm(items, total=total, desc=desc)
+        return
+
+    count = 0
+    for item in items:
+        count += 1
+        if total is not None and (count == 1 or count == total or count % 25 == 0):
+            label = f"{desc}: " if desc else ""
+            print(f"{label}{count}/{total}")
+        yield item
 
 
 SP1_CHOICES = {
@@ -267,6 +292,24 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--scene-level-tasks-json",
+        type=Path,
+        default=None,
+        help=(
+            "Optional path to scene-level task annotations. "
+            "If provided, matching scene-level tasks are injected into each "
+            "group using the nuScenes scene name."
+        ),
+    )
+    parser.add_argument(
+        "--enable-traj-prediction-tasks",
+        action="store_true",
+        help=(
+            "Generate ego-trajectory prediction tasks that use the next 5 future "
+            "frames after the current anchor frame as ground truth."
+        ),
+    )
+    parser.add_argument(
         "--track-window",
         type=int,
         default=2,
@@ -313,6 +356,43 @@ def parse_args() -> argparse.Namespace:
 def load_json(path: Path) -> List[dict] | dict:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_scene_level_tasks_by_scene(path: Path | None) -> Dict[str, List[dict]]:
+    if path is None or not path.exists():
+        return {}
+
+    payload = load_json(path)
+    if not isinstance(payload, list):
+        raise ValueError(f"Expected a list of scene-level tasks in: {path}")
+
+    tasks_by_scene: Dict[str, List[dict]] = {}
+    for row in payload:
+        if not isinstance(row, dict):
+            continue
+        scene_name = str(row.get("scene_id", "")).strip()
+        if not scene_name:
+            continue
+        tasks_by_scene.setdefault(scene_name, []).append(row)
+    return tasks_by_scene
+
+
+def clone_scene_level_task_for_group(
+    template: dict,
+    *,
+    group_scene_id: str,
+    group_id: str,
+    source_group_file: str,
+    nuscenes_scene_name: str,
+) -> dict:
+    task = copy.deepcopy(template)
+    task["scene_id"] = group_scene_id
+    task["group_id"] = group_id
+    task["source_group_file"] = source_group_file
+    task["nuscenes_scene_name"] = nuscenes_scene_name
+    task["scene_level_source_scene_id"] = str(template.get("scene_id", "")).strip()
+    task["model_response"] = ""
+    return task
 
 
 def yaw_from_quaternion_wxyz(q: List[float]) -> float:
@@ -1945,6 +2025,11 @@ def main() -> None:
         if args.questions_output
         else root / "questions_with_answers_all.json"
     )
+    scene_level_tasks_json = (
+        args.scene_level_tasks_json.resolve()
+        if args.scene_level_tasks_json
+        else root.parent.parent / "scene-level-context-tasks.json"
+    )
 
     version_dir = root / args.version
     sample_data = load_json(version_dir / "sample_data.json")
@@ -1956,6 +2041,14 @@ def main() -> None:
     scene = load_json(version_dir / "scene.json")
     log = load_json(version_dir / "log.json")
     questions = load_json(questions_json)
+    scene_level_tasks_by_scene = load_scene_level_tasks_by_scene(scene_level_tasks_json)
+    if args.enable_traj_prediction_tasks:
+        if not isinstance(questions, dict) or not isinstance(questions.get("tasks"), list):
+            raise ValueError("questions.json must be a dict with a 'tasks' list.")
+        existing_ids = {str(task.get("id", "")).strip() for task in questions["tasks"] if isinstance(task, dict)}
+        for template in get_traj_prediction_task_templates():
+            if template["id"] not in existing_ids:
+                questions["tasks"].append(copy.deepcopy(template))
 
     sample_by_token = {row["token"]: row for row in sample}
     ann_by_token = {row["token"]: row for row in sample_annotation}
@@ -2000,6 +2093,10 @@ def main() -> None:
     su7_template = None
     te6_template = None
     tm6_template = None
+    trj1_template = None
+    trj2_template = None
+    trj3_template = None
+    trj4_template = None
     for task in questions.get("tasks", []):
         if task.get("id") == "SP-1":
             sp1_template = task
@@ -2055,6 +2152,14 @@ def main() -> None:
             te6_template = task
         elif task.get("id") == "TM-6":
             tm6_template = task
+        elif task.get("id") == "TRJ-1":
+            trj1_template = task
+        elif task.get("id") == "TRJ-2":
+            trj2_template = task
+        elif task.get("id") == "TRJ-3":
+            trj3_template = task
+        elif task.get("id") == "TRJ-4":
+            trj4_template = task
     if sp1_template is None:
         raise ValueError("SP-1 task not found in questions.json")
     if sp2_template is None:
@@ -2109,6 +2214,14 @@ def main() -> None:
         raise ValueError("TE-6 task not found in questions.json")
     if tm6_template is None:
         raise ValueError("TM-6 task not found in questions.json")
+    if args.enable_traj_prediction_tasks and trj1_template is None:
+        raise ValueError("TRJ-1 task not found in merged questions")
+    if args.enable_traj_prediction_tasks and trj2_template is None:
+        raise ValueError("TRJ-2 task not found in merged questions")
+    if args.enable_traj_prediction_tasks and trj3_template is None:
+        raise ValueError("TRJ-3 task not found in merged questions")
+    if args.enable_traj_prediction_tasks and trj4_template is None:
+        raise ValueError("TRJ-4 task not found in merged questions")
 
     group_json_paths = sorted(formatted_dir.glob("scene_*/group_*_vehicle_annotations.json"))
     sp1_results = []
@@ -2138,6 +2251,12 @@ def main() -> None:
     su7_results = []
     te6_results = []
     tm6_results = []
+    trj1_results = []
+    trj2_results = []
+    trj3_results = []
+    trj4_results = []
+    scene_context_results: Dict[str, List[dict]] = {}
+    processed_traj_group_keys: set[tuple[str, str]] = set()
     frq_enabled = not args.disable_frq_generation
     frq_llm = None
     frq_sampling_params = None
@@ -2159,13 +2278,23 @@ def main() -> None:
             presence_penalty=0.0,
         )
     map_cache: Dict[str, NuScenesMap] = {}
-    for path in group_json_paths:
+    for path in progress_iter(
+        group_json_paths,
+        total=len(group_json_paths),
+        desc="Generating answers",
+    ):
         payload = load_json(path)
         selected_token = payload.get("selected_vehicle_annotation_token")
         if not selected_token:
             continue
         if selected_token not in ann_by_token:
             continue
+        fifth_sample = sample_by_token.get(payload.get("fifth_frame_sample_token", ""), {})
+        scene_token = fifth_sample.get("scene_token", "")
+        scene_meta = scene_by_token.get(scene_token, {})
+        scene_name = str(scene_meta.get("name", "")).strip()
+        scene_description = str(scene_meta.get("description", "")).strip()
+        source_group_file = str(path.relative_to(formatted_dir))
 
         choice, metrics = infer_sp1_choice(
             selected_ann_token=selected_token,
@@ -2748,11 +2877,6 @@ def main() -> None:
             validate_mcq_rows_for_frq(su_mcq_rows, "SU-7")
             validate_mcq_rows_for_frq(te_mcq_rows, "TE-6")
             validate_mcq_rows_for_frq(tm_mcq_rows, "TM-6")
-            fifth_sample = sample_by_token.get(payload.get("fifth_frame_sample_token", ""), {})
-            scene_token = fifth_sample.get("scene_token", "")
-            scene_meta = scene_by_token.get(scene_token, {})
-            scene_name = str(scene_meta.get("name", "")).strip()
-            scene_description = str(scene_meta.get("description", "")).strip()
             vehicle_annotation_count = payload.get("vehicle_annotation_count")
             if not isinstance(vehicle_annotation_count, int):
                 vehicle_annotation_count = None
@@ -2853,6 +2977,44 @@ def main() -> None:
                 }
             )
 
+        for scene_task in scene_level_tasks_by_scene.get(scene_name, []):
+            question_id = str(scene_task.get("id", "")).strip()
+            if not question_id:
+                continue
+            row = clone_scene_level_task_for_group(
+                scene_task,
+                group_scene_id=payload["scene_id"],
+                group_id=payload["group_id"],
+                source_group_file=source_group_file,
+                nuscenes_scene_name=scene_name,
+            )
+            scene_context_results.setdefault(question_id, []).append(row)
+
+        if args.enable_traj_prediction_tasks:
+            base_group_id = str(payload.get("base_group_id", payload["group_id"]))
+            traj_group_key = (str(payload["scene_id"]), base_group_id)
+            if traj_group_key in processed_traj_group_keys:
+                continue
+            processed_traj_group_keys.add(traj_group_key)
+            traj_payload = {
+                "scene_id": payload["scene_id"],
+                "group_id": base_group_id,
+                "source_group_file": source_group_file,
+                "fifth_frame_sample_token": payload["fifth_frame_sample_token"],
+            }
+            traj_rows = generate_traj_prediction_rows(
+                payload=traj_payload,
+                sample_by_token=sample_by_token,
+                ego_pose_by_token=ego_pose_by_token,
+                cam_front_sd_by_sample=cam_front_sd_by_sample,
+                future_steps=5,
+            )
+            if traj_rows is not None:
+                trj1_results.append(traj_rows["TRJ-1"])
+                trj2_results.append(traj_rows["TRJ-2"])
+                trj3_results.append(traj_rows["TRJ-3"])
+                trj4_results.append(traj_rows["TRJ-4"])
+
     output = {
         "tasks": {
             "SP-1": {"count": len(sp1_results), "results": sp1_results},
@@ -2882,8 +3044,18 @@ def main() -> None:
             "SU-7": {"count": len(su7_results), "results": su7_results},
             "TE-6": {"count": len(te6_results), "results": te6_results},
             "TM-6": {"count": len(tm6_results), "results": tm6_results},
+            "TRJ-1": {"count": len(trj1_results), "results": trj1_results},
+            "TRJ-2": {"count": len(trj2_results), "results": trj2_results},
+            "TRJ-3": {"count": len(trj3_results), "results": trj3_results},
+            "TRJ-4": {"count": len(trj4_results), "results": trj4_results},
         }
     }
+    output["tasks"].update(
+        {
+            question_id: {"count": len(rows), "results": rows}
+            for question_id, rows in sorted(scene_context_results.items())
+        }
+    )
     output_json.parent.mkdir(parents=True, exist_ok=True)
     with output_json.open("w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=True)
@@ -2917,6 +3089,10 @@ def main() -> None:
     generated_su7_tasks = []
     generated_te6_tasks = []
     generated_tm6_tasks = []
+    generated_trj1_tasks = []
+    generated_trj2_tasks = []
+    generated_trj3_tasks = []
+    generated_trj4_tasks = []
     for row in sp1_results:
         task = copy.deepcopy(sp1_template)
         task["object_id"] = row["object_id"]
@@ -3187,6 +3363,38 @@ def main() -> None:
         task["group_id"] = row["group_id"]
         task["source_group_file"] = row["source_group_file"]
         generated_tm6_tasks.append(task)
+    for row in trj1_results:
+        task = copy.deepcopy(trj1_template)
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj1_tasks.append(task)
+    for row in trj2_results:
+        task = copy.deepcopy(trj2_template)
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj2_tasks.append(task)
+    for row in trj3_results:
+        task = copy.deepcopy(trj3_template)
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj3_tasks.append(task)
+    for row in trj4_results:
+        task = copy.deepcopy(trj4_template)
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj4_tasks.append(task)
 
     questions_with_answers["generated_answers"] = {
         "SP-1": {
@@ -3297,7 +3505,29 @@ def main() -> None:
             "count": len(generated_tm6_tasks),
             "tasks": generated_tm6_tasks,
         },
+        "TRJ-1": {
+            "count": len(generated_trj1_tasks),
+            "tasks": generated_trj1_tasks,
+        },
+        "TRJ-2": {
+            "count": len(generated_trj2_tasks),
+            "tasks": generated_trj2_tasks,
+        },
+        "TRJ-3": {
+            "count": len(generated_trj3_tasks),
+            "tasks": generated_trj3_tasks,
+        },
+        "TRJ-4": {
+            "count": len(generated_trj4_tasks),
+            "tasks": generated_trj4_tasks,
+        },
     }
+    questions_with_answers["generated_answers"].update(
+        {
+            question_id: {"count": len(rows), "tasks": rows}
+            for question_id, rows in sorted(scene_context_results.items())
+        }
+    )
     with questions_output.open("w", encoding="utf-8") as f:
         json.dump(questions_with_answers, f, indent=2, ensure_ascii=True)
 
@@ -3329,6 +3559,12 @@ def main() -> None:
     print(f"Generated TM-4 answers: {len(tm4_results)}")
     print(f"Generated TM-5 answers: {len(tm5_results)}")
     print(f"Generated TM-6 answers: {len(tm6_results)}")
+    print(f"Generated TRJ-1 answers: {len(trj1_results)}")
+    print(f"Generated TRJ-2 answers: {len(trj2_results)}")
+    print(f"Generated TRJ-3 answers: {len(trj3_results)}")
+    print(f"Generated TRJ-4 answers: {len(trj4_results)}")
+    for question_id, rows in sorted(scene_context_results.items()):
+        print(f"Generated {question_id} answers: {len(rows)}")
     print(f"Wrote: {output_json}")
     print(f"Wrote questions copy: {questions_output}")
 

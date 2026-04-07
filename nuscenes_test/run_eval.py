@@ -132,10 +132,14 @@ def resolve_context_images(
         if not matches:
             raise FileNotFoundError(f"Missing frame image for index {idx} in {scene_dir}")
         image_paths.append(matches[0])
-    # Use the first 4 as temporal context. For the 5th query frame, prefer
-    # the pre-rendered annotated image that highlights the selected object.
+    # For object-level tasks, prefer the pre-rendered annotated query frame that
+    # highlights the selected object. Scene-level tasks should use the plain grid.
     group_id = group_payload.get("group_id")
-    if scene_id and group_id:
+    is_object_level = bool(task.get("object_id")) or task.get("task") not in {
+        "scene-context",
+        "trajectory-prediction",
+    }
+    if is_object_level and scene_id and group_id:
         annotated_name = f"{group_id}_selected_vehicle_render.jpg"
         annotated_path = scene_dir / annotated_name
         if annotated_path.exists():
@@ -158,8 +162,30 @@ def build_user_message(task: dict[str, Any]) -> dict[str, Any]:
     question_text = task.get("question", "").replace("<obj>", object_ref)
     choices = task.get("choices", {})
     question_format = task.get("question_format", "MCQ")
+    is_scene_level = task.get("task") == "scene-context"
+    is_traj_prediction = task.get("task") == "trajectory-prediction"
 
-    if question_format == "MCQ" and choices:
+    if is_traj_prediction and question_format != "MCQ":
+        instruction = (
+            "You are given 5 consecutive driving frames ending at the current anchor frame. "
+            "Predict the ego vehicle trajectory for the next 5 future frames.\n"
+            "Respond with only a JSON array of exactly 5 points formatted as "
+            "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
+        )
+    elif is_scene_level and question_format == "MCQ" and choices:
+        instruction = (
+            "You are given 5 consecutive driving frames from the same scene. "
+            "Use the full scene context across the frames to answer the question.\n"
+            "Select exactly one option from the provided choices. "
+            "Respond with the option key (for example: A)."
+        )
+    elif is_scene_level:
+        instruction = (
+            "You are given 5 consecutive driving frames from the same scene. "
+            "Use the full scene context across the frames to answer the question.\n"
+            "Provide a concise answer in plain text."
+        )
+    elif question_format == "MCQ" and choices:
         instruction = (
             "You are given 5 consecutive driving frames (first 4 are context, "
             "5th is the query frame for answering and contains a bounding-box "

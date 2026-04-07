@@ -18,11 +18,33 @@ import argparse
 import json
 import random
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterable, Iterator, List, TypeVar
 
 import matplotlib.pyplot as plt
 from nuscenes.nuscenes import NuScenes
 from PIL import Image
+
+try:
+    from tqdm.auto import tqdm
+except ImportError:
+    tqdm = None
+
+
+T = TypeVar("T")
+
+
+def progress_iter(items: Iterable[T], *, total: int | None = None, desc: str = "") -> Iterator[T]:
+    if tqdm is not None:
+        yield from tqdm(items, total=total, desc=desc)
+        return
+
+    count = 0
+    for item in items:
+        count += 1
+        if total is not None and (count == 1 or count == total or count % 10 == 0):
+            label = f"{desc}: " if desc else ""
+            print(f"{label}{count}/{total}")
+        yield item
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,6 +116,15 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=42,
         help="Random seed for reproducible annotation selection.",
+    )
+    parser.add_argument(
+        "--num-selected-objects",
+        type=int,
+        default=1,
+        help=(
+            "How many distinct vehicle annotations to sample per group "
+            "(default: 1)."
+        ),
     )
     return parser.parse_args()
 
@@ -183,10 +214,24 @@ def bbox_volume(size: List[float] | None) -> float:
     return volume if volume > 0 else 1.0
 
 
+def sample_vehicle_records(
+    vehicle_records: List[dict],
+    num_selected_objects: int,
+) -> List[dict]:
+    if num_selected_objects <= 0 or not vehicle_records:
+        return []
+    sample_count = min(num_selected_objects, len(vehicle_records))
+    if sample_count == len(vehicle_records):
+        return random.sample(vehicle_records, k=sample_count)
+    return random.sample(vehicle_records, k=sample_count)
+
+
 def main() -> None:
     args = parse_args()
     if args.group_size <= 0:
         raise ValueError("--group-size must be > 0")
+    if args.num_selected_objects <= 0:
+        raise ValueError("--num-selected-objects must be > 0")
 
     random.seed(args.seed)
     root = args.root.resolve()
@@ -230,14 +275,22 @@ def main() -> None:
     groups_with_vehicle = 0
     renders_written = 0
 
-    for scene_idx, scene in enumerate(scenes, start=1):
+    for scene_idx, scene in progress_iter(
+        enumerate(scenes, start=1),
+        total=len(scenes),
+        desc="Rendering scenes",
+    ):
         scene_dir = output_dir / f"scene_{scene_idx:03d}"
         if not scene_dir.exists():
             print(f"[WARN] Scene directory does not exist, skipping: {scene_dir}")
             continue
 
         groups = chunk_scene(scene, args.group_size)
-        for group_idx, group in enumerate(groups, start=1):
+        for group_idx, group in progress_iter(
+            enumerate(groups, start=1),
+            total=len(groups),
+            desc=f"scene_{scene_idx:03d} groups",
+        ):
             total_groups += 1
             fifth_frame = group[-1]
             sample_token = fifth_frame["sample_token"]
@@ -265,42 +318,79 @@ def main() -> None:
                     }
                 )
 
-            selected_token = None
-            selected_render_path = None
+            selected_records: List[dict] = []
             if vehicle_records:
                 groups_with_vehicle += 1
-                weights = [bbox_volume(item.get("size")) for item in vehicle_records]
-                selected = random.choices(vehicle_records, weights=weights, k=1)[0]
-                selected_token = selected["token"]
-                selected_render_path = (
-                    scene_dir / f"group_{group_idx:03d}_selected_vehicle_render.jpg"
+                selected_records = sample_vehicle_records(
+                    vehicle_records=vehicle_records,
+                    num_selected_objects=args.num_selected_objects,
                 )
-                nusc.render_annotation(selected_token, out_path=str(selected_render_path))
+
+            if not selected_records:
+                report = {
+                    "scene_id": f"scene_{scene_idx:03d}",
+                    "group_id": f"group_{group_idx:03d}",
+                    "base_group_id": f"group_{group_idx:03d}",
+                    "group_size": args.group_size,
+                    "frame_indices_1based": list(
+                        range((group_idx - 1) * args.group_size + 1, group_idx * args.group_size + 1)
+                    ),
+                    "fifth_frame_sample_token": sample_token,
+                    "fifth_frame_cam_front_filename": fifth_frame["filename"],
+                    "vehicle_annotation_count": len(vehicle_records),
+                    "vehicle_annotations": vehicle_records,
+                    "selected_vehicle_annotation_token": None,
+                    "selected_vehicle_render_path": None,
+                    "selected_vehicle_annotation_tokens": [],
+                    "selected_vehicle_render_paths": [],
+                }
+                report_path = scene_dir / f"group_{group_idx:03d}_vehicle_annotations.json"
+                with report_path.open("w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2, ensure_ascii=True)
+                continue
+
+            multi_object = len(selected_records) > 1
+            selected_tokens = [record["token"] for record in selected_records]
+            selected_render_paths: List[str] = []
+            for selected_idx, selected in enumerate(selected_records, start=1):
+                if multi_object:
+                    group_id = f"group_{group_idx:03d}_obj{selected_idx:02d}"
+                    render_filename = f"{group_id}_selected_vehicle_render.jpg"
+                    report_filename = f"{group_id}_vehicle_annotations.json"
+                else:
+                    group_id = f"group_{group_idx:03d}"
+                    render_filename = f"{group_id}_selected_vehicle_render.jpg"
+                    report_filename = f"{group_id}_vehicle_annotations.json"
+
+                selected_render_path = scene_dir / render_filename
+                nusc.render_annotation(selected["token"], out_path=str(selected_render_path))
                 plt.close("all")
                 keep_right_panel(selected_render_path)
                 renders_written += 1
+                selected_render_paths.append(str(selected_render_path.relative_to(output_dir)))
 
-            report = {
-                "scene_id": f"scene_{scene_idx:03d}",
-                "group_id": f"group_{group_idx:03d}",
-                "group_size": args.group_size,
-                "frame_indices_1based": list(
-                    range((group_idx - 1) * args.group_size + 1, group_idx * args.group_size + 1)
-                ),
-                "fifth_frame_sample_token": sample_token,
-                "fifth_frame_cam_front_filename": fifth_frame["filename"],
-                "vehicle_annotation_count": len(vehicle_records),
-                "vehicle_annotations": vehicle_records,
-                "selected_vehicle_annotation_token": selected_token,
-                "selected_vehicle_render_path": (
-                    str(selected_render_path.relative_to(output_dir))
-                    if selected_render_path is not None
-                    else None
-                ),
-            }
-            report_path = scene_dir / f"group_{group_idx:03d}_vehicle_annotations.json"
-            with report_path.open("w", encoding="utf-8") as f:
-                json.dump(report, f, indent=2, ensure_ascii=True)
+                report = {
+                    "scene_id": f"scene_{scene_idx:03d}",
+                    "group_id": group_id,
+                    "base_group_id": f"group_{group_idx:03d}",
+                    "group_size": args.group_size,
+                    "frame_indices_1based": list(
+                        range((group_idx - 1) * args.group_size + 1, group_idx * args.group_size + 1)
+                    ),
+                    "fifth_frame_sample_token": sample_token,
+                    "fifth_frame_cam_front_filename": fifth_frame["filename"],
+                    "vehicle_annotation_count": len(vehicle_records),
+                    "vehicle_annotations": vehicle_records,
+                    "selected_vehicle_annotation_token": selected["token"],
+                    "selected_vehicle_render_path": str(selected_render_path.relative_to(output_dir)),
+                    "selected_vehicle_annotation_tokens": selected_tokens,
+                    "selected_vehicle_render_paths": selected_render_paths.copy(),
+                    "selected_vehicle_index": selected_idx - 1,
+                    "selected_vehicle_count": len(selected_records),
+                }
+                report_path = scene_dir / report_filename
+                with report_path.open("w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2, ensure_ascii=True)
 
     print(f"Total scenes: {len(scenes)}")
     print(f"Total complete groups ({args.group_size} frames): {total_groups}")

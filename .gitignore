@@ -1,0 +1,6 @@
+nuscenes_test/formatted_scenes/
+nuscenes_test/__pycache__/
+__pycache__/
+nuscenes_test/questions_with_answers_all.json
+nuscenes_test/generated_answers_all.json
+nuscenes_test/vlm_responses_*.json
