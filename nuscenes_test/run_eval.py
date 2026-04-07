@@ -166,12 +166,27 @@ def build_user_message(task: dict[str, Any]) -> dict[str, Any]:
     is_traj_prediction = task.get("task") == "trajectory-prediction"
 
     if is_traj_prediction and question_format != "MCQ":
-        instruction = (
-            "You are given 5 consecutive driving frames ending at the current anchor frame. "
-            "Predict the ego vehicle trajectory for the next 5 future frames.\n"
-            "Respond with only a JSON array of exactly 5 points formatted as "
-            "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
-        )
+        if task.get("id") == "TRJ-5":
+            instruction = (
+                "You are given 5 consecutive driving frames ending at the current anchor frame. "
+                "The first future ego-trajectory point is already provided in the question. "
+                "Predict the following 4 future frames.\n"
+                "Respond with only a JSON array of exactly 4 points formatted as "
+                "[[x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
+            )
+        elif task.get("id") == "TRJ-6":
+            instruction = (
+                "You are given 5 consecutive driving frames ending at the current anchor frame. "
+                "Briefly describe the likely future ego path over the next 5 future frames. "
+                "Mention the overall maneuver, endpoint region, and speed trend in 1-2 sentences."
+            )
+        else:
+            instruction = (
+                "You are given 5 consecutive driving frames ending at the current anchor frame. "
+                "Predict the ego vehicle trajectory for the next 5 future frames.\n"
+                "Respond with only a JSON array of exactly 5 points formatted as "
+                "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
+            )
     elif is_scene_level and question_format == "MCQ" and choices:
         instruction = (
             "You are given 5 consecutive driving frames from the same scene. "

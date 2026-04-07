@@ -2097,6 +2097,8 @@ def main() -> None:
     trj2_template = None
     trj3_template = None
     trj4_template = None
+    trj5_template = None
+    trj6_template = None
     for task in questions.get("tasks", []):
         if task.get("id") == "SP-1":
             sp1_template = task
@@ -2160,6 +2162,10 @@ def main() -> None:
             trj3_template = task
         elif task.get("id") == "TRJ-4":
             trj4_template = task
+        elif task.get("id") == "TRJ-5":
+            trj5_template = task
+        elif task.get("id") == "TRJ-6":
+            trj6_template = task
     if sp1_template is None:
         raise ValueError("SP-1 task not found in questions.json")
     if sp2_template is None:
@@ -2222,6 +2228,10 @@ def main() -> None:
         raise ValueError("TRJ-3 task not found in merged questions")
     if args.enable_traj_prediction_tasks and trj4_template is None:
         raise ValueError("TRJ-4 task not found in merged questions")
+    if args.enable_traj_prediction_tasks and trj5_template is None:
+        raise ValueError("TRJ-5 task not found in merged questions")
+    if args.enable_traj_prediction_tasks and trj6_template is None:
+        raise ValueError("TRJ-6 task not found in merged questions")
 
     group_json_paths = sorted(formatted_dir.glob("scene_*/group_*_vehicle_annotations.json"))
     sp1_results = []
@@ -2255,6 +2265,8 @@ def main() -> None:
     trj2_results = []
     trj3_results = []
     trj4_results = []
+    trj5_results = []
+    trj6_results = []
     scene_context_results: Dict[str, List[dict]] = {}
     processed_traj_group_keys: set[tuple[str, str]] = set()
     frq_enabled = not args.disable_frq_generation
@@ -3014,6 +3026,8 @@ def main() -> None:
                 trj2_results.append(traj_rows["TRJ-2"])
                 trj3_results.append(traj_rows["TRJ-3"])
                 trj4_results.append(traj_rows["TRJ-4"])
+                trj5_results.append(traj_rows["TRJ-5"])
+                trj6_results.append(traj_rows["TRJ-6"])
 
     output = {
         "tasks": {
@@ -3048,6 +3062,8 @@ def main() -> None:
             "TRJ-2": {"count": len(trj2_results), "results": trj2_results},
             "TRJ-3": {"count": len(trj3_results), "results": trj3_results},
             "TRJ-4": {"count": len(trj4_results), "results": trj4_results},
+            "TRJ-5": {"count": len(trj5_results), "results": trj5_results},
+            "TRJ-6": {"count": len(trj6_results), "results": trj6_results},
         }
     }
     output["tasks"].update(
@@ -3093,6 +3109,8 @@ def main() -> None:
     generated_trj2_tasks = []
     generated_trj3_tasks = []
     generated_trj4_tasks = []
+    generated_trj5_tasks = []
+    generated_trj6_tasks = []
     for row in sp1_results:
         task = copy.deepcopy(sp1_template)
         task["object_id"] = row["object_id"]
@@ -3395,6 +3413,24 @@ def main() -> None:
         task["group_id"] = row["group_id"]
         task["source_group_file"] = row["source_group_file"]
         generated_trj4_tasks.append(task)
+    for row in trj5_results:
+        task = copy.deepcopy(trj5_template)
+        task["question"] = row["question"]
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj5_tasks.append(task)
+    for row in trj6_results:
+        task = copy.deepcopy(trj6_template)
+        task["question"] = row["question"]
+        task["ground_truth"] = row["ground_truth"]
+        task["model_response"] = ""
+        task["scene_id"] = row["scene_id"]
+        task["group_id"] = row["group_id"]
+        task["source_group_file"] = row["source_group_file"]
+        generated_trj6_tasks.append(task)
 
     questions_with_answers["generated_answers"] = {
         "SP-1": {
@@ -3521,6 +3557,14 @@ def main() -> None:
             "count": len(generated_trj4_tasks),
             "tasks": generated_trj4_tasks,
         },
+        "TRJ-5": {
+            "count": len(generated_trj5_tasks),
+            "tasks": generated_trj5_tasks,
+        },
+        "TRJ-6": {
+            "count": len(generated_trj6_tasks),
+            "tasks": generated_trj6_tasks,
+        },
     }
     questions_with_answers["generated_answers"].update(
         {
@@ -3563,6 +3607,8 @@ def main() -> None:
     print(f"Generated TRJ-2 answers: {len(trj2_results)}")
     print(f"Generated TRJ-3 answers: {len(trj3_results)}")
     print(f"Generated TRJ-4 answers: {len(trj4_results)}")
+    print(f"Generated TRJ-5 answers: {len(trj5_results)}")
+    print(f"Generated TRJ-6 answers: {len(trj6_results)}")
     for question_id, rows in sorted(scene_context_results.items()):
         print(f"Generated {question_id} answers: {len(rows)}")
     print(f"Wrote: {output_json}")

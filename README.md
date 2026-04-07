@@ -109,9 +109,17 @@ What it does:
 
 Trajectory prediction details:
 - `TRJ-1`, `TRJ-2`, `TRJ-3` are MCQ tasks.
-- `TRJ-4` is a free-response trajectory task.
+- `TRJ-4`, `TRJ-5`, `TRJ-6` are FRQ tasks.
 - All `TRJ-*` labels use the next 5 future frames after the current anchor frame.
 - The trajectory GT is stored in ego-centric local coordinates.
+- `TRJ-4` predicts the full next 5 future points.
+- `TRJ-5` is a conditional continuation task: the first future point is given, and the model predicts the following 4 points.
+- `TRJ-6` is a natural-language future-path description task.
+- The `TRJ-6` ground truth is generated automatically from the same future 5-frame trajectory by first deriving:
+  - maneuver (`TRJ-1`)
+  - endpoint region (`TRJ-2`)
+  - speed trend (`TRJ-3`)
+  and then rendering those structured labels into a short textual summary.
 
 ### 4. Run evaluation
 
@@ -158,9 +166,12 @@ Scene-level annotations are matched using the original nuScenes scene name such 
 - `TRJ-2`: future endpoint region at the 5th future frame
 - `TRJ-3`: future speed trend over the next 5 future frames
 - `TRJ-4`: direct prediction of the next 5 future ego-trajectory points
+- `TRJ-5`: given the first future point, predict the following 4 future ego-trajectory points
+- `TRJ-6`: describe the likely future path in natural language
 
 The current 5 input frames are context only.
 The ground truth comes from the future 5 frames after the anchor frame, not from the current input window.
+The wording for `TRJ-*` explicitly assumes the model uses the past 5 consecutive 360-degree multi-camera frames as context.
 
 ## Script Parameters
 
@@ -262,7 +273,7 @@ python - <<'PY'
 import json
 with open("./questions_with_answers_all.json") as f:
     data=json.load(f)
-for k in ["TRJ-1", "TRJ-2", "TRJ-3", "TRJ-4"]:
+for k in ["TRJ-1", "TRJ-2", "TRJ-3", "TRJ-4", "TRJ-5", "TRJ-6"]:
     print(k, data["generated_answers"].get(k, {}).get("count"))
 PY
 ```
