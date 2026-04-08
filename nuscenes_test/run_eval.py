@@ -8,13 +8,24 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable, Iterator, TypeVar
 
 from PIL import Image
-from transformers import AutoProcessor
-from vllm import LLM, SamplingParams
+import torch
+from transformers import AutoModelForImageTextToText, AutoProcessor
 
-os.environ["HF_HOME"] = "/local1/lieqiliu/huggingface"
+try:
+    from vllm import LLM, SamplingParams
+except ImportError:
+    LLM = None
+    SamplingParams = None
+
+try:
+    from tqdm.auto import tqdm
+except ImportError:
+    tqdm = None
+
+os.environ["HF_HOME"] = "/data2/rgao727/hf_cache_store"
 
 MAX_IMAGE_PIXELS = 640 * 640
 MAX_MODEL_LEN = 8192
@@ -23,6 +34,36 @@ TRAJ_POINT_TASKS = {
     "TRJ-5": 5,
     "TRJ-6": 4,
 }
+
+T = TypeVar("T")
+
+
+def progress_iter(items: Iterable[T], *, total: int | None = None, desc: str = "") -> Iterator[T]:
+    if tqdm is not None:
+        yield from tqdm(items, total=total, desc=desc)
+        return
+
+    count = 0
+    for item in items:
+        count += 1
+        if total is not None and (count == 1 or count == total or count % 25 == 0):
+            label = f"{desc}: " if desc else ""
+            print(f"{label}{count}/{total}")
+        yield item
+
+
+def log_progress(message: str) -> None:
+    if tqdm is not None:
+        tqdm.write(message)
+    else:
+        print(message)
+
+
+def batched(items: list[T], batch_size: int) -> Iterator[list[T]]:
+    if batch_size <= 0:
+        raise ValueError("batch_size must be >= 1")
+    for start in range(0, len(items), batch_size):
+        yield items[start : start + batch_size]
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,16 +96,34 @@ def parse_args() -> argparse.Namespace:
         help="Vision-language model name/path.",
     )
     parser.add_argument(
+        "--backend",
+        choices=("transformers", "vllm"),
+        default="transformers",
+        help="Inference backend to use.",
+    )
+    parser.add_argument(
         "--tensor-parallel-size",
         type=int,
         default=2,
         help="Tensor parallel size for vLLM.",
     )
     parser.add_argument(
+        "--hf-cache-dir",
+        type=str,
+        default=os.environ.get("HF_HOME", "/data2/rgao727/hf_cache_store"),
+        help="Hugging Face cache directory for model downloads.",
+    )
+    parser.add_argument(
         "--max-tasks",
         type=int,
         default=0,
         help="If >0, only run first N tasks (quick test mode).",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=1,
+        help="Number of tasks to process together per generation call.",
     )
     return parser.parse_args()
 
@@ -84,7 +143,14 @@ def build_prompt(processor: AutoProcessor, messages: list[dict[str, Any]]) -> st
     return processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
 
-def run_generate(
+def get_model_input_device(model: AutoModelForImageTextToText) -> torch.device:
+    try:
+        return next(model.parameters()).device
+    except StopIteration:
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def run_generate_vllm(
     llm: LLM,
     sampling_params: SamplingParams,
     prompt: str,
@@ -93,6 +159,81 @@ def run_generate(
     request: dict[str, Any] = {"prompt": prompt, "multi_modal_data": {"image": images}}
     outputs = llm.generate(request, sampling_params=sampling_params)
     return outputs[0].outputs[0].text.strip() if outputs else ""
+
+
+def run_generate_vllm_batch(
+    *,
+    llm: LLM,
+    sampling_params: SamplingParams,
+    prompts: list[str],
+    image_batches: list[list[Image.Image]],
+) -> list[str]:
+    requests = [
+        {"prompt": prompt, "multi_modal_data": {"image": images}}
+        for prompt, images in zip(prompts, image_batches)
+    ]
+    outputs = llm.generate(requests, sampling_params=sampling_params)
+    return [output.outputs[0].text.strip() if output.outputs else "" for output in outputs]
+
+
+def run_generate_transformers(
+    *,
+    model: AutoModelForImageTextToText,
+    processor: AutoProcessor,
+    prompt: str,
+    images: list[Image.Image],
+) -> str:
+    inputs = processor(
+        text=[prompt],
+        images=images,
+        return_tensors="pt",
+        padding=True,
+    )
+    device = get_model_input_device(model)
+    inputs = {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
+    generated = model.generate(
+        **inputs,
+        max_new_tokens=2048,
+        do_sample=False,
+    )
+    prompt_len = inputs["input_ids"].shape[1]
+    generated_ids = generated[:, prompt_len:]
+    text = processor.batch_decode(
+        generated_ids,
+        skip_special_tokens=True,
+        clean_up_tokenization_spaces=False,
+    )
+    return text[0].strip() if text else ""
+
+
+def run_generate_transformers_batch(
+    *,
+    model: AutoModelForImageTextToText,
+    processor: AutoProcessor,
+    prompts: list[str],
+    image_batches: list[list[Image.Image]],
+) -> list[str]:
+    inputs = processor(
+        text=prompts,
+        images=image_batches,
+        return_tensors="pt",
+        padding=True,
+    )
+    device = get_model_input_device(model)
+    inputs = {key: value.to(device) if hasattr(value, "to") else value for key, value in inputs.items()}
+    generated = model.generate(
+        **inputs,
+        max_new_tokens=2048,
+        do_sample=False,
+    )
+    prompt_lens = inputs["attention_mask"].sum(dim=1).tolist()
+    generated_ids = [generated[i, int(prompt_lens[i]) :] for i in range(generated.shape[0])]
+    text = processor.batch_decode(
+        generated_ids,
+        skip_special_tokens=True,
+        clean_up_tokenization_spaces=False,
+    )
+    return [item.strip() for item in text]
 
 
 def safe_read_json(path: Path) -> dict[str, Any]:
@@ -358,8 +499,143 @@ def compute_fde(pred: list[list[float]], gt: list[list[float]]) -> float:
     return point_distance(pred[-1], gt[-1])
 
 
+def append_result_and_update_metrics(
+    *,
+    task: dict[str, Any],
+    raw_text: str,
+    results: list[dict[str, Any]],
+    per_task_stats: dict[str, dict[str, Any]],
+    numeric_task_stats: dict[str, dict[str, Any]],
+    traj_task_stats: dict[str, dict[str, Any]],
+) -> tuple[int, int, float]:
+    total_mcq_delta = 0
+    correct_mcq_delta = 0
+    baseline_delta = 0.0
+
+    question_id = str(task.get("id", ""))
+    question_format = str(task.get("question_format", ""))
+    choices = task.get("choices", {})
+    ground_truth = str(task.get("ground_truth", "")).strip().upper()
+    predicted_key = extract_answer_key(raw_text, choices=choices)
+    predicted_value = None
+    ground_truth_value = None
+    absolute_error = None
+    squared_error = None
+    predicted_traj = None
+    ground_truth_traj = None
+    traj_ade = None
+    traj_fde = None
+    traj_format_score = None
+    is_correct = None
+    random_baseline = None
+
+    if question_format == "MCQ" and isinstance(choices, dict) and choices:
+        num_options = len(choices)
+        random_baseline = 1.0 / float(num_options)
+        if ground_truth:
+            is_correct = predicted_key == ground_truth
+            total_mcq_delta = 1
+            baseline_delta = random_baseline
+            if is_correct:
+                correct_mcq_delta = 1
+            bucket = per_task_stats.setdefault(
+                question_id,
+                {
+                    "total": 0.0,
+                    "correct": 0.0,
+                    "baseline_sum": 0.0,
+                    "ground_truth_distribution": {},
+                    "model_answer_distribution": {},
+                },
+            )
+            bucket["total"] += 1.0
+            bucket["baseline_sum"] += random_baseline
+            if is_correct:
+                bucket["correct"] += 1.0
+            gt_key = ground_truth if ground_truth else "__missing__"
+            pred_key = predicted_key if predicted_key else "__invalid__"
+            bucket["ground_truth_distribution"][gt_key] = (
+                bucket["ground_truth_distribution"].get(gt_key, 0) + 1
+            )
+            bucket["model_answer_distribution"][pred_key] = (
+                bucket["model_answer_distribution"].get(pred_key, 0) + 1
+            )
+    elif question_id == "SP-3a":
+        predicted_value = extract_numeric_meters(raw_text)
+        ground_truth_value = extract_numeric_meters(str(task.get("ground_truth", "")))
+        if predicted_value is not None and ground_truth_value is not None:
+            absolute_error = abs(predicted_value - ground_truth_value)
+            squared_error = (predicted_value - ground_truth_value) ** 2
+            bucket = numeric_task_stats.setdefault(
+                question_id,
+                {
+                    "count": 0.0,
+                    "sum_abs_error": 0.0,
+                    "sum_sq_error": 0.0,
+                },
+            )
+            bucket["count"] += 1.0
+            bucket["sum_abs_error"] += absolute_error
+            bucket["sum_sq_error"] += squared_error
+    elif question_id in TRAJ_POINT_TASKS:
+        expected_len = TRAJ_POINT_TASKS[question_id]
+        predicted_traj = extract_traj_points(raw_text, expected_len=expected_len)
+        gt_raw = task.get("ground_truth", "")
+        gt_text = gt_raw if isinstance(gt_raw, str) else json.dumps(gt_raw)
+        ground_truth_traj = extract_traj_points(gt_text, expected_len=expected_len)
+        traj_format_score = 1.0 if (
+            predicted_traj is not None and ground_truth_traj is not None
+        ) else 0.0
+        bucket = traj_task_stats.setdefault(
+            question_id,
+            {
+                "count": 0.0,
+                "valid_count": 0.0,
+                "format_score_sum": 0.0,
+                "ade_sum": 0.0,
+                "fde_sum": 0.0,
+            },
+        )
+        bucket["count"] += 1.0
+        bucket["format_score_sum"] += traj_format_score
+        if predicted_traj is not None and ground_truth_traj is not None:
+            traj_ade = compute_ade(predicted_traj, ground_truth_traj)
+            traj_fde = compute_fde(predicted_traj, ground_truth_traj)
+            bucket["valid_count"] += 1.0
+            bucket["ade_sum"] += traj_ade
+            bucket["fde_sum"] += traj_fde
+
+    results.append(
+        {
+            "id": question_id,
+            "scene_id": task.get("scene_id"),
+            "group_id": task.get("group_id"),
+            "question": task.get("question", "").replace("<obj>", task.get("object_reference", "the object")),
+            "choices": choices,
+            "object_id": task.get("object_id"),
+            "object_reference": task.get("object_reference"),
+            "model_response": raw_text,
+            "predicted_option": predicted_key,
+            "predicted_value": predicted_value,
+            "predicted_traj": predicted_traj,
+            "ground_truth": ground_truth if ground_truth else None,
+            "ground_truth_value": ground_truth_value,
+            "ground_truth_traj": ground_truth_traj,
+            "is_correct": is_correct,
+            "absolute_error": absolute_error,
+            "squared_error": squared_error,
+            "traj_ade": traj_ade,
+            "traj_fde": traj_fde,
+            "traj_format_score": traj_format_score,
+            "random_baseline": random_baseline,
+        }
+    )
+    return total_mcq_delta, correct_mcq_delta, baseline_delta
+
+
 def main() -> None:
     args = parse_args()
+    os.environ["HF_HOME"] = args.hf_cache_dir
     if not args.tasks.exists():
         raise FileNotFoundError(f"Tasks file not found: {args.tasks}")
     if not args.formatted_scenes_dir.exists():
@@ -372,21 +648,47 @@ def main() -> None:
     if not tasks:
         raise RuntimeError("No tasks found in task JSON.")
 
-    processor = AutoProcessor.from_pretrained(args.model)
-    llm = LLM(
-        model=args.model,
-        tensor_parallel_size=args.tensor_parallel_size,
-        max_model_len=MAX_MODEL_LEN,
-        gpu_memory_utilization=0.85,
+    min_pixels = 256 * 28 * 28
+    max_pixels = 768 * 28 * 28
+    processor = AutoProcessor.from_pretrained(
+        args.model,
+        trust_remote_code=True,
+        cache_dir=args.hf_cache_dir,
+        min_pixels=min_pixels,
+        max_pixels=max_pixels,
     )
-    sampling_params = SamplingParams(
-        temperature=0.2,
-        top_p=0.9,
-        top_k=20,
-        repetition_penalty=1.0,
-        presence_penalty=0.0,
-        max_tokens=2048,
-    )
+    if hasattr(processor, "tokenizer") and processor.tokenizer is not None:
+        processor.tokenizer.padding_side = "left"
+    llm = None
+    sampling_params = None
+    model = None
+    if args.backend == "vllm":
+        if LLM is None or SamplingParams is None:
+            raise ImportError("vLLM backend requested, but vllm is not installed in this environment.")
+        llm = LLM(
+            model=args.model,
+            tensor_parallel_size=args.tensor_parallel_size,
+            max_model_len=MAX_MODEL_LEN,
+            gpu_memory_utilization=0.85,
+        )
+        sampling_params = SamplingParams(
+            temperature=0.2,
+            top_p=0.9,
+            top_k=20,
+            repetition_penalty=1.0,
+            presence_penalty=0.0,
+            max_tokens=2048,
+        )
+    else:
+        model = AutoModelForImageTextToText.from_pretrained(
+            args.model,
+            device_map="auto",
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
+            attn_implementation="flash_attention_2",
+            cache_dir=args.hf_cache_dir,
+        )
+        model.eval()
 
     group_cache: dict[str, dict[str, Any]] = {}
     results: list[dict[str, Any]] = []
@@ -396,148 +698,110 @@ def main() -> None:
     per_task_stats: dict[str, dict[str, Any]] = {}
     numeric_task_stats: dict[str, dict[str, Any]] = {}
     traj_task_stats: dict[str, dict[str, Any]] = {}
-    for idx, task in enumerate(tasks, start=1):
-        try:
-            image_paths = resolve_context_images(task, args.formatted_scenes_dir, group_cache)
-            images = load_images(image_paths)
-            user_message = build_user_message(task)
-            prompt = build_prompt(processor, [user_message])
-            raw_text = run_generate(llm=llm, sampling_params=sampling_params, prompt=prompt, images=images)
-            for im in images:
-                im.close()
-
-            question_id = str(task.get("id", ""))
-            question_format = str(task.get("question_format", ""))
-            choices = task.get("choices", {})
-            ground_truth = str(task.get("ground_truth", "")).strip().upper()
-            predicted_key = extract_answer_key(raw_text, choices=choices)
-            predicted_value = None
-            ground_truth_value = None
-            absolute_error = None
-            squared_error = None
-            predicted_traj = None
-            ground_truth_traj = None
-            traj_ade = None
-            traj_fde = None
-            traj_format_score = None
-            is_correct = None
-            random_baseline = None
-
-            if question_format == "MCQ" and isinstance(choices, dict) and choices:
-                num_options = len(choices)
-                random_baseline = 1.0 / float(num_options)
-                if ground_truth:
-                    is_correct = predicted_key == ground_truth
-                    total_mcq += 1
-                    baseline_sum += random_baseline
-                    if is_correct:
-                        correct_mcq += 1
-                    bucket = per_task_stats.setdefault(
-                        question_id,
-                        {
-                            "total": 0.0,
-                            "correct": 0.0,
-                            "baseline_sum": 0.0,
-                            "ground_truth_distribution": {},
-                            "model_answer_distribution": {},
-                        },
-                    )
-                    bucket["total"] += 1.0
-                    bucket["baseline_sum"] += random_baseline
-                    if is_correct:
-                        bucket["correct"] += 1.0
-                    gt_key = ground_truth if ground_truth else "__missing__"
-                    pred_key = predicted_key if predicted_key else "__invalid__"
-                    bucket["ground_truth_distribution"][gt_key] = (
-                        bucket["ground_truth_distribution"].get(gt_key, 0) + 1
-                    )
-                    bucket["model_answer_distribution"][pred_key] = (
-                        bucket["model_answer_distribution"].get(pred_key, 0) + 1
-                    )
-            elif question_id == "SP-3a":
-                predicted_value = extract_numeric_meters(raw_text)
-                ground_truth_value = extract_numeric_meters(str(task.get("ground_truth", "")))
-                if predicted_value is not None and ground_truth_value is not None:
-                    absolute_error = abs(predicted_value - ground_truth_value)
-                    squared_error = (predicted_value - ground_truth_value) ** 2
-                    bucket = numeric_task_stats.setdefault(
-                        question_id,
-                        {
-                            "count": 0.0,
-                            "sum_abs_error": 0.0,
-                            "sum_sq_error": 0.0,
-                        },
-                    )
-                    bucket["count"] += 1.0
-                    bucket["sum_abs_error"] += absolute_error
-                    bucket["sum_sq_error"] += squared_error
-            elif question_id in TRAJ_POINT_TASKS:
-                expected_len = TRAJ_POINT_TASKS[question_id]
-                predicted_traj = extract_traj_points(raw_text, expected_len=expected_len)
-                gt_raw = task.get("ground_truth", "")
-                gt_text = gt_raw if isinstance(gt_raw, str) else json.dumps(gt_raw)
-                ground_truth_traj = extract_traj_points(gt_text, expected_len=expected_len)
-                traj_format_score = 1.0 if (
-                    predicted_traj is not None and ground_truth_traj is not None
-                ) else 0.0
-                bucket = traj_task_stats.setdefault(
-                    question_id,
+    for task_batch in progress_iter(
+        list(batched(tasks, args.batch_size)),
+        total=math.ceil(len(tasks) / float(args.batch_size)),
+        desc="Running eval",
+    ):
+        prepared: list[dict[str, Any]] = []
+        for task in task_batch:
+            try:
+                image_paths = resolve_context_images(task, args.formatted_scenes_dir, group_cache)
+                images = load_images(image_paths)
+                user_message = build_user_message(task)
+                prompt = build_prompt(processor, [user_message])
+                prepared.append({"task": task, "images": images, "prompt": prompt})
+            except Exception as exc:
+                results.append(
                     {
-                        "count": 0.0,
-                        "valid_count": 0.0,
-                        "format_score_sum": 0.0,
-                        "ade_sum": 0.0,
-                        "fde_sum": 0.0,
-                    },
+                        "id": task.get("id"),
+                        "scene_id": task.get("scene_id"),
+                        "group_id": task.get("group_id"),
+                        "question": task.get("question", ""),
+                        "model_response": f"[ERROR] {exc}",
+                    }
                 )
-                bucket["count"] += 1.0
-                bucket["format_score_sum"] += traj_format_score
-                if predicted_traj is not None and ground_truth_traj is not None:
-                    traj_ade = compute_ade(predicted_traj, ground_truth_traj)
-                    traj_fde = compute_fde(predicted_traj, ground_truth_traj)
-                    bucket["valid_count"] += 1.0
-                    bucket["ade_sum"] += traj_ade
-                    bucket["fde_sum"] += traj_fde
 
-            result = {
-                "id": question_id,
-                "scene_id": task.get("scene_id"),
-                "group_id": task.get("group_id"),
-                "question": task.get("question", "").replace("<obj>", task.get("object_reference", "the object")),
-                "choices": choices,
-                "object_id": task.get("object_id"),
-                "object_reference": task.get("object_reference"),
-                "model_response": raw_text,
-                "predicted_option": predicted_key,
-                "predicted_value": predicted_value,
-                "predicted_traj": predicted_traj,
-                "ground_truth": ground_truth if ground_truth else None,
-                "ground_truth_value": ground_truth_value,
-                "ground_truth_traj": ground_truth_traj,
-                "is_correct": is_correct,
-                "absolute_error": absolute_error,
-                "squared_error": squared_error,
-                "traj_ade": traj_ade,
-                "traj_fde": traj_fde,
-                "traj_format_score": traj_format_score,
-                "random_baseline": random_baseline,
-            }
-            results.append(result)
-            status = "ok"
-        except Exception as exc:
-            results.append(
-                {
-                    "id": task.get("id"),
-                    "scene_id": task.get("scene_id"),
-                    "group_id": task.get("group_id"),
-                    "question": task.get("question", ""),
-                    "model_response": f"[ERROR] {exc}",
-                }
+        if not prepared:
+            continue
+
+        try:
+            prompts = [item["prompt"] for item in prepared]
+            image_batches = [item["images"] for item in prepared]
+            if args.backend == "vllm":
+                raw_texts = run_generate_vllm_batch(
+                    llm=llm,
+                    sampling_params=sampling_params,
+                    prompts=prompts,
+                    image_batches=image_batches,
+                )
+            else:
+                raw_texts = run_generate_transformers_batch(
+                    model=model,
+                    processor=processor,
+                    prompts=prompts,
+                    image_batches=image_batches,
+                )
+        except Exception as batch_exc:
+            raw_texts = []
+            log_progress(f"Batch inference failed, retrying individually: {batch_exc}")
+            for item in prepared:
+                try:
+                    if args.backend == "vllm":
+                        raw_text = run_generate_vllm(
+                            llm=llm,
+                            sampling_params=sampling_params,
+                            prompt=item["prompt"],
+                            images=item["images"],
+                        )
+                    else:
+                        raw_text = run_generate_transformers(
+                            model=model,
+                            processor=processor,
+                            prompt=item["prompt"],
+                            images=item["images"],
+                        )
+                    raw_texts.append(raw_text)
+                except Exception as exc:
+                    results.append(
+                        {
+                            "id": item["task"].get("id"),
+                            "scene_id": item["task"].get("scene_id"),
+                            "group_id": item["task"].get("group_id"),
+                            "question": item["task"].get("question", ""),
+                            "model_response": f"[ERROR] {exc}",
+                        }
+                    )
+                    raw_texts.append("")
+
+        for item, raw_text in zip(prepared, raw_texts):
+            if raw_text.startswith("[ERROR]"):
+                continue
+            if raw_text == "":
+                # Empty string is a valid model output in principle, but if this item already
+                # recorded an exception above, skip duplicate result creation.
+                existing_error = (
+                    results
+                    and results[-1].get("id") == item["task"].get("id")
+                    and str(results[-1].get("model_response", "")).startswith("[ERROR]")
+                )
+                if existing_error:
+                    continue
+            total_delta, correct_delta, baseline_delta = append_result_and_update_metrics(
+                task=item["task"],
+                raw_text=raw_text,
+                results=results,
+                per_task_stats=per_task_stats,
+                numeric_task_stats=numeric_task_stats,
+                traj_task_stats=traj_task_stats,
             )
-            status = "failed"
+            total_mcq += total_delta
+            correct_mcq += correct_delta
+            baseline_sum += baseline_delta
 
-        print(f"[{idx}/{len(tasks)}] {task.get('id')} {task.get('scene_id')}:{task.get('group_id')} -> {status}")
-
+        for item in prepared:
+            for im in item["images"]:
+                im.close()
     per_task_summary: dict[str, dict[str, Any]] = {}
     for task_id, stats in per_task_stats.items():
         total = max(stats["total"], 1.0)
@@ -585,6 +849,8 @@ def main() -> None:
             "tasks_file": str(args.tasks.resolve()),
             "formatted_scenes_dir": str(args.formatted_scenes_dir.resolve()),
             "model": args.model,
+            "backend": args.backend,
+            "hf_cache_dir": args.hf_cache_dir,
             "num_tasks": len(tasks),
             "mcq_evaluated_count": total_mcq,
             "mcq_correct_count": correct_mcq,
@@ -601,7 +867,7 @@ def main() -> None:
     with args.output.open("w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    print(f"Saved responses to: {args.output}")
+    log_progress(f"Saved responses to: {args.output}")
 
 
 if __name__ == "__main__":
