@@ -25,7 +25,7 @@ try:
 except ImportError:
     tqdm = None
 
-os.environ["HF_HOME"] = "/data2/rgao727/hf_cache_store"
+os.environ["HF_HOME"] = "/local1/rgao727/hf_cache_store"
 
 MAX_IMAGE_PIXELS = 640 * 640
 MAX_MODEL_LEN = 8192
@@ -157,7 +157,7 @@ def run_generate_vllm(
     images: list[Image.Image],
 ) -> str:
     request: dict[str, Any] = {"prompt": prompt, "multi_modal_data": {"image": images}}
-    outputs = llm.generate(request, sampling_params=sampling_params)
+    outputs = llm.generate(request, sampling_params=sampling_params, use_tqdm=False)
     return outputs[0].outputs[0].text.strip() if outputs else ""
 
 
@@ -172,7 +172,7 @@ def run_generate_vllm_batch(
         {"prompt": prompt, "multi_modal_data": {"image": images}}
         for prompt, images in zip(prompts, image_batches)
     ]
-    outputs = llm.generate(requests, sampling_params=sampling_params)
+    outputs = llm.generate(requests, sampling_params=sampling_params, use_tqdm=False)
     return [output.outputs[0].text.strip() if output.outputs else "" for output in outputs]
 
 
@@ -314,8 +314,10 @@ def build_user_message(task: dict[str, Any]) -> dict[str, Any]:
         if task.get("id") == "TRJ-6":
             instruction = (
                 "You are given 5 consecutive driving frames ending at the current anchor frame. "
-                "The first future ego-trajectory point is already provided in the question. "
-                "Predict the following 4 future frames.\n"
+                "All coordinates must be expressed relative to the 5th observed frame in its ego-centric "
+                "coordinate system. The first future ego-trajectory point is already provided in the question. "
+                "Predict only the following 4 future frames. Do not repeat the known first point and do not "
+                "return an empty array.\n"
                 "Respond with only a JSON array of exactly 4 points formatted as "
                 "[[x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
             )
@@ -328,7 +330,9 @@ def build_user_message(task: dict[str, Any]) -> dict[str, Any]:
         else:
             instruction = (
                 "You are given 5 consecutive driving frames ending at the current anchor frame. "
-                "Predict the ego vehicle trajectory for the next 5 future frames.\n"
+                "All coordinates must be expressed relative to the 5th observed frame in its ego-centric "
+                "coordinate system. Predict the ego vehicle trajectory for the next 5 future frames. "
+                "Do not return an empty array.\n"
                 "Respond with only a JSON array of exactly 5 points formatted as "
                 "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
             )
@@ -526,6 +530,7 @@ def append_result_and_update_metrics(
     traj_ade = None
     traj_fde = None
     traj_format_score = None
+    traj_parse_error = None
     is_correct = None
     random_baseline = None
 
@@ -583,6 +588,11 @@ def append_result_and_update_metrics(
         gt_raw = task.get("ground_truth", "")
         gt_text = gt_raw if isinstance(gt_raw, str) else json.dumps(gt_raw)
         ground_truth_traj = extract_traj_points(gt_text, expected_len=expected_len)
+        if predicted_traj is None:
+            traj_parse_error = (
+                f"Expected a JSON array with exactly {expected_len} [x, y] points in the current ego-centric "
+                "coordinate system."
+            )
         traj_format_score = 1.0 if (
             predicted_traj is not None and ground_truth_traj is not None
         ) else 0.0
@@ -618,6 +628,7 @@ def append_result_and_update_metrics(
             "predicted_option": predicted_key,
             "predicted_value": predicted_value,
             "predicted_traj": predicted_traj,
+            "predicted_traj_raw": raw_text if question_id in TRAJ_POINT_TASKS else None,
             "ground_truth": ground_truth if ground_truth else None,
             "ground_truth_value": ground_truth_value,
             "ground_truth_traj": ground_truth_traj,
@@ -627,6 +638,7 @@ def append_result_and_update_metrics(
             "traj_ade": traj_ade,
             "traj_fde": traj_fde,
             "traj_format_score": traj_format_score,
+            "traj_parse_error": traj_parse_error,
             "random_baseline": random_baseline,
         }
     )

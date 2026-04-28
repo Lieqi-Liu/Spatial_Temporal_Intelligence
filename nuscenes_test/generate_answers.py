@@ -358,13 +358,9 @@ def load_json(path: Path) -> List[dict] | dict:
         return json.load(f)
 
 
-def load_scene_level_tasks_by_scene(path: Path | None) -> Dict[str, List[dict]]:
-    if path is None or not path.exists():
-        return {}
-
-    payload = load_json(path)
+def _index_scene_level_tasks(payload: Any) -> Dict[str, List[dict]]:
     if not isinstance(payload, list):
-        raise ValueError(f"Expected a list of scene-level tasks in: {path}")
+        raise ValueError("Expected a list of scene-level tasks.")
 
     tasks_by_scene: Dict[str, List[dict]] = {}
     for row in payload:
@@ -375,6 +371,27 @@ def load_scene_level_tasks_by_scene(path: Path | None) -> Dict[str, List[dict]]:
             continue
         tasks_by_scene.setdefault(scene_name, []).append(row)
     return tasks_by_scene
+
+
+def load_scene_level_tasks_by_scene(
+    *,
+    embedded_payload: Any = None,
+    path: Path | None = None,
+) -> Dict[str, List[dict]]:
+    merged: Dict[str, List[dict]] = {}
+
+    if isinstance(embedded_payload, list):
+        embedded = _index_scene_level_tasks(embedded_payload)
+        for scene_name, rows in embedded.items():
+            merged.setdefault(scene_name, []).extend(rows)
+
+    if path is not None and path.exists():
+        payload = load_json(path)
+        external = _index_scene_level_tasks(payload)
+        for scene_name, rows in external.items():
+            merged.setdefault(scene_name, []).extend(rows)
+
+    return merged
 
 
 def clone_scene_level_task_for_group(
@@ -2025,11 +2042,7 @@ def main() -> None:
         if args.questions_output
         else root / "questions_with_answers_all.json"
     )
-    scene_level_tasks_json = (
-        args.scene_level_tasks_json.resolve()
-        if args.scene_level_tasks_json
-        else root.parent.parent / "scene-level-context-tasks.json"
-    )
+    scene_level_tasks_json = args.scene_level_tasks_json.resolve() if args.scene_level_tasks_json else None
 
     version_dir = root / args.version
     sample_data = load_json(version_dir / "sample_data.json")
@@ -2041,7 +2054,10 @@ def main() -> None:
     scene = load_json(version_dir / "scene.json")
     log = load_json(version_dir / "log.json")
     questions = load_json(questions_json)
-    scene_level_tasks_by_scene = load_scene_level_tasks_by_scene(scene_level_tasks_json)
+    scene_level_tasks_by_scene = load_scene_level_tasks_by_scene(
+        embedded_payload=questions.get("scene_level_tasks") if isinstance(questions, dict) else None,
+        path=scene_level_tasks_json,
+    )
     if args.enable_traj_prediction_tasks:
         if not isinstance(questions, dict) or not isinstance(questions.get("tasks"), list):
             raise ValueError("questions.json must be a dict with a 'tasks' list.")
@@ -2275,6 +2291,7 @@ def main() -> None:
     trj7_results = []
     scene_context_results: Dict[str, List[dict]] = {}
     processed_traj_group_keys: set[tuple[str, str]] = set()
+    processed_scene_level_group_keys: set[tuple[str, str]] = set()
     frq_enabled = not args.disable_frq_generation
     frq_llm = None
     frq_sampling_params = None
@@ -2995,21 +3012,28 @@ def main() -> None:
                 }
             )
 
-        for scene_task in scene_level_tasks_by_scene.get(scene_name, []):
-            question_id = str(scene_task.get("id", "")).strip()
-            if not question_id:
-                continue
-            row = clone_scene_level_task_for_group(
-                scene_task,
-                group_scene_id=payload["scene_id"],
-                group_id=payload["group_id"],
-                source_group_file=source_group_file,
-                nuscenes_scene_name=scene_name,
-            )
-            scene_context_results.setdefault(question_id, []).append(row)
+        base_group_id = str(payload.get("base_group_id", payload["group_id"]))
+        scene_level_group_key = (str(payload["scene_id"]), base_group_id)
+        if scene_level_group_key not in processed_scene_level_group_keys:
+            processed_scene_level_group_keys.add(scene_level_group_key)
+            for scene_task in scene_level_tasks_by_scene.get(scene_name, []):
+                question_id = str(scene_task.get("id", "")).strip()
+                if not question_id:
+                    continue
+                # Treat SC-6 as an FRQ-style task for generation control, even
+                # though its GT is currently rule-based.
+                if question_id == "SC-6" and not frq_enabled:
+                    continue
+                row = clone_scene_level_task_for_group(
+                    scene_task,
+                    group_scene_id=payload["scene_id"],
+                    group_id=base_group_id,
+                    source_group_file=source_group_file,
+                    nuscenes_scene_name=scene_name,
+                )
+                scene_context_results.setdefault(question_id, []).append(row)
 
         if args.enable_traj_prediction_tasks:
-            base_group_id = str(payload.get("base_group_id", payload["group_id"]))
             traj_group_key = (str(payload["scene_id"]), base_group_id)
             if traj_group_key in processed_traj_group_keys:
                 continue
@@ -3034,7 +3058,10 @@ def main() -> None:
                 trj4_results.append(traj_rows["TRJ-4"])
                 trj5_results.append(traj_rows["TRJ-5"])
                 trj6_results.append(traj_rows["TRJ-6"])
-                trj7_results.append(traj_rows["TRJ-7"])
+                # Treat TRJ-7 as an FRQ-style task for generation control, even
+                # though its GT is currently synthesized from structured labels.
+                if frq_enabled:
+                    trj7_results.append(traj_rows["TRJ-7"])
 
     output = {
         "tasks": {
@@ -3594,6 +3621,16 @@ def main() -> None:
             for question_id, rows in sorted(scene_context_results.items())
         }
     )
+    questions_with_answers["scene_level_tasks"] = [
+        row
+        for rows in scene_level_tasks_by_scene.values()
+        for row in rows
+    ]
+    expanded_eval_tasks: List[dict] = []
+    for payload in questions_with_answers["generated_answers"].values():
+        if isinstance(payload, dict):
+            expanded_eval_tasks.extend(payload.get("tasks", []))
+    questions_with_answers["tasks"] = expanded_eval_tasks
     with questions_output.open("w", encoding="utf-8") as f:
         json.dump(questions_with_answers, f, indent=2, ensure_ascii=True)
 

@@ -32,6 +32,10 @@ TRAJ3_CHOICES = {
 }
 
 
+def _format_points_inline(points: List[List[float]]) -> str:
+    return json.dumps(points, ensure_ascii=True)
+
+
 def get_traj_prediction_task_templates() -> List[dict]:
     return [
         {
@@ -90,7 +94,8 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, predict the ego vehicle "
                 "trajectory for the next 5 future frames (approximately 2.5 seconds) in the current ego-centric "
-                "coordinate system. Output only a JSON array of exactly 5 points formatted as "
+                "coordinate system anchored at the 5th observed frame. The current frame is [0.0, 0.0]. "
+                "Output only a JSON array of exactly 5 points formatted as "
                 "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
             ),
             "ground_truth": "",
@@ -102,7 +107,8 @@ def get_traj_prediction_task_templates() -> List[dict]:
             "question_format": "FRQ",
             "question": (
                 "Based on the past 5 consecutive 360-degree multi-camera frames, the ego vehicle position at the "
-                "next future frame is already known in the current ego-centric coordinate system as [x1, y1]. "
+                "next future frame is already known in the current ego-centric coordinate system anchored at the "
+                "5th observed frame as [x1, y1]. The current frame is [0.0, 0.0]. "
                 "Given that first future point, predict the trajectory for the following 4 future frames. "
                 "Output only a JSON array of exactly 4 points formatted as "
                 "[[x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
@@ -291,6 +297,20 @@ def generate_traj_prediction_rows(
     past_endpoint_x, past_endpoint_y = global_to_local_xy(past_dx, past_dy, past_start_yaw)
     past_endpoint_dist = math.hypot(past_endpoint_x, past_endpoint_y)
 
+    past_local_points: List[List[float]] = []
+    for token in past_sample_tokens:
+        ego_row = _ego_pose_for_sample(
+            sample_token=token,
+            ego_pose_by_token=ego_pose_by_token,
+            cam_front_sd_by_sample=cam_front_sd_by_sample,
+        )
+        if ego_row is None:
+            return None
+        dx = float(ego_row["translation"][0]) - float(current_xy[0])
+        dy = float(ego_row["translation"][1]) - float(current_xy[1])
+        x_local, y_local = global_to_local_xy(dx, dy, current_yaw)
+        past_local_points.append([round(x_local, 3), round(y_local, 3)])
+
     future_local_points: List[List[float]] = []
     future_global_points: List[List[float]] = []
     future_samples: List[dict] = []
@@ -432,11 +452,14 @@ def generate_traj_prediction_rows(
             **common,
             "question_id": "TRJ-5",
             "question": (
-                "Based on the past 5 consecutive 360-degree multi-camera frames, predict the ego vehicle "
-                "trajectory for the next 5 future frames (approximately 2.5 seconds) in the current ego-centric "
-                "coordinate system. Output only a JSON array of exactly 5 points formatted as "
-                "[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
+                "Based on the past 5 consecutive 360-degree multi-camera frames, use the following past ego "
+                "trajectory in the ego-centric coordinate system anchored at the 5th observed frame.\n"
+                f"Past observed ego positions (oldest to current, where the current frame is [0.0, 0.0]): "
+                f"{_format_points_inline(past_local_points)}\n"
+                "Predict the next 5 future ego positions in the same coordinate system. Output only a JSON "
+                "array of exactly 5 points formatted as [[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
             ),
+            "past_traj_local": past_local_points,
             "ground_truth": json.dumps(future_local_points, ensure_ascii=True),
             "model_response": "",
         },
@@ -444,13 +467,16 @@ def generate_traj_prediction_rows(
             **common,
             "question_id": "TRJ-6",
             "question": (
-                "Based on the past 5 consecutive 360-degree multi-camera frames, the ego vehicle position at the "
-                "next future frame is already known in the current ego-centric coordinate system as "
-                f"{json.dumps(future_local_points[0], ensure_ascii=True)}. "
-                "Given that first future point, predict the trajectory for the following 4 future frames. "
-                "Output only a JSON array of exactly 4 points formatted as "
+                "Based on the past 5 consecutive 360-degree multi-camera frames, use the following past ego "
+                "trajectory in the ego-centric coordinate system anchored at the 5th observed frame.\n"
+                f"Past observed ego positions (oldest to current, where the current frame is [0.0, 0.0]): "
+                f"{_format_points_inline(past_local_points)}\n"
+                f"Known first future position [x1, y1]: {json.dumps(future_local_points[0], ensure_ascii=True)}\n"
+                "Predict only the following 4 future ego positions in the same coordinate system. Do not repeat "
+                "the known first future position. Output only a JSON array of exactly 4 points formatted as "
                 "[[x2, y2], [x3, y3], [x4, y4], [x5, y5]]."
             ),
+            "past_traj_local": past_local_points,
             "known_future_point_local": future_local_points[0],
             "ground_truth": json.dumps(future_local_points[1:], ensure_ascii=True),
             "model_response": "",

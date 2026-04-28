@@ -387,6 +387,83 @@
         "question": "Describe the recent history of the scene, including objects that appeared or disappeared, changes in their motion, and any interactions with the ego vehicle.",
         "ground_truth": "",
         "model_response": ""
+      },
+      {
+        "id": "SC-1",
+        "task": "scene-context",
+        "question_format": "MCQ",
+        "question": "What is the primary weather and environmental condition in the current scene?",
+        "choices": {
+          "A": "Clear / Sunny",
+          "B": "Rain / Wet road surface",
+          "C": "Overcast / Cloudy",
+          "D": "Snow / Ice",
+          "E": "Fog / Heavy haze"
+        },
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
+        "id": "SC-2",
+        "task": "scene-context",
+        "question_format": "MCQ",
+        "question": "Based on the lighting conditions and sky visibility, what is the estimated time of day?",
+        "choices": {
+          "A": "Daytime (adequate natural lighting)",
+          "B": "Nighttime (relying on streetlights/headlights)",
+          "C": "Dawn / Dusk (transition lighting, potential glare)"
+        },
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
+        "id": "SC-3",
+        "task": "scene-context",
+        "question_format": "MCQ",
+        "question": "Which of the following best describes the overall road typology and driving environment?",
+        "choices": {
+          "A": "Urban intersection / Crossroad",
+          "B": "Straight urban/suburban road",
+          "C": "Highway / Expressway",
+          "D": "Construction zone",
+          "E": "Parking lot / Off-road area"
+        },
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
+        "id": "SC-4",
+        "task": "scene-context",
+        "question_format": "MCQ",
+        "question": "How spatially dense or crowded is the current traffic environment considering all visible road users?",
+        "choices": {
+          "A": "Sparse",
+          "B": "Moderate",
+          "C": "Dense"
+        },
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
+        "id": "SC-5",
+        "task": "scene-context",
+        "question_format": "MCQ",
+        "question": "What is the baseline safety risk level of the overall scene, independent of any single specific object?",
+        "choices": {
+          "A": "Low risk",
+          "B": "Moderate risk",
+          "C": "High risk"
+        },
+        "ground_truth": "",
+        "model_response": ""
+      },
+      {
+        "id": "SC-6",
+        "task": "scene-context",
+        "question_format": "FRQ",
+        "question": "Describe the overall environment of the scene, including weather, lighting conditions, road type, and notable surrounding activity.",
+        "ground_truth": "",
+        "model_response": ""
       }
     ]
   }

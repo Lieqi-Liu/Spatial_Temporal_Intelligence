@@ -1,0 +1,1138 @@
+{
+  "dataset": "nuscenes",
+  "selection_config": {
+    "target_groups": 335,
+    "target_scenes": 43,
+    "min_complexity_quantile": 0.5,
+    "complexity_weight": 0.35,
+    "task_balance_weight": 1.0,
+    "scene_balance_weight": 0.8,
+    "scene_diversity_weight": 1.2,
+    "allow_groups_without_traj": false
+  },
+  "metadata_source": {
+    "dataset": "nuscenes",
+    "uses_external_metadata": true,
+    "metadata_roots": {
+      "nuscenes_root": "/local1/rgao727/nuscenes",
+      "formatted_scenes_root": "/local1/rgao727/nuscenes/formatted_scenes_trainval"
+    },
+    "metadata_used": [
+      "formatted_scenes_trainval/group_*_vehicle_annotations.json",
+      "v1.0-trainval/attribute.json",
+      "v1.0-trainval/visibility.json",
+      "v1.0-trainval/sample_annotation.json"
+    ],
+    "scene_attribute_source": "SC-1 to SC-5 ground truth labels in the input JSON."
+  },
+  "full_set": {
+    "group_count": 6693,
+    "scene_count": 850,
+    "question_count": 222480,
+    "task_type_count": 34,
+    "complexity": {
+      "min": 1.3023478776614632,
+      "max": 96.15884429709482,
+      "mean": 24.636351015144957,
+      "median": 23.329695747435952
+    },
+    "average_complexity_breakdown": {
+      "density": 5.702614672045421,
+      "diversity": 1.2055580457194084,
+      "environment": 0.8656955027640819,
+      "interaction": 5.103839832660989,
+      "motion": 3.6840280890482595,
+      "occlusion": 5.618183176453011,
+      "priority": 0.47494357453536423,
+      "scene_layout": 1.4814881219184224,
+      "temporal": 0.5
+    },
+    "per_task_counts": {
+      "SC-1": 6693,
+      "SC-2": 6693,
+      "SC-3": 6693,
+      "SC-4": 6693,
+      "SC-5": 6693,
+      "SP-1": 6693,
+      "SP-2": 6693,
+      "SP-3": 6693,
+      "SP-3a": 6693,
+      "SP-4": 6693,
+      "SP-5": 6693,
+      "SP-6": 6693,
+      "SU-1": 6693,
+      "SU-2": 6693,
+      "SU-3": 6693,
+      "SU-4": 6693,
+      "SU-5": 6693,
+      "SU-6": 6693,
+      "TE-1": 6693,
+      "TE-2": 6693,
+      "TE-3": 6693,
+      "TE-4": 6693,
+      "TE-5": 6693,
+      "TM-1": 6693,
+      "TM-2": 6693,
+      "TM-3": 6693,
+      "TM-4": 6693,
+      "TM-5": 6693,
+      "TRJ-1": 5846,
+      "TRJ-2": 5846,
+      "TRJ-3": 5846,
+      "TRJ-4": 5846,
+      "TRJ-5": 5846,
+      "TRJ-6": 5846
+    },
+    "per_task_ground_truth_distribution": {
+      "SC-1": {
+        "A": 4244,
+        "D": 1422,
+        "B": 1027
+      },
+      "SC-2": {
+        "A": 5906,
+        "B": 787
+      },
+      "SC-3": {
+        "E": 1510,
+        "B": 1741,
+        "D": 1137,
+        "A": 2233,
+        "C": 72
+      },
+      "SC-4": {
+        "C": 3567,
+        "B": 2313,
+        "A": 813
+      },
+      "SC-5": {
+        "B": 4256,
+        "A": 649,
+        "C": 1788
+      },
+      "SP-1": {
+        "A": 2689,
+        "E": 1036,
+        "B": 2360,
+        "C": 174,
+        "F": 268,
+        "D": 166
+      },
+      "SP-2": {
+        "F": 676,
+        "E": 798,
+        "B": 686,
+        "D": 555,
+        "C": 768,
+        "G": 805,
+        "A": 769,
+        "H": 1636
+      },
+      "SP-3": {
+        "A": 976,
+        "B": 3498,
+        "C": 1682,
+        "D": 467,
+        "E": 70
+      },
+      "SP-4": {
+        "B": 1153,
+        "C": 1583,
+        "D": 1292,
+        "E": 1465,
+        "A": 1200
+      },
+      "SP-5": {
+        "A": 6115,
+        "B": 448,
+        "C": 129,
+        "D": 1
+      },
+      "SP-6": {
+        "A": 6557,
+        "C": 136
+      },
+      "SU-1": {
+        "B": 1992,
+        "D": 1541,
+        "C": 2609,
+        "A": 551
+      },
+      "SU-2": {
+        "C": 1404,
+        "B": 1718,
+        "A": 2503,
+        "G": 1003,
+        "F": 65
+      },
+      "SU-3": {
+        "B": 2407,
+        "C": 949,
+        "A": 3216,
+        "D": 121
+      },
+      "SU-4": {
+        "B": 2189,
+        "A": 2747,
+        "C": 164,
+        "D": 1593
+      },
+      "SU-5": {
+        "C": 2189,
+        "B": 2747,
+        "F": 209,
+        "A": 1548
+      },
+      "SU-6": {
+        "D": 1996,
+        "B": 2454,
+        "C": 1688,
+        "A": 555
+      },
+      "TE-1": {
+        "A": 2141,
+        "D": 3557,
+        "E": 421,
+        "B": 282,
+        "C": 292
+      },
+      "TE-2": {
+        "E": 578,
+        "A": 3755,
+        "B": 844,
+        "C": 590,
+        "D": 926
+      },
+      "TE-3": {
+        "A": 5590,
+        "D": 423,
+        "E": 136,
+        "C": 300,
+        "B": 244
+      },
+      "TE-4": {
+        "D": 3017,
+        "B": 1968,
+        "E": 253,
+        "F": 133,
+        "A": 1124,
+        "C": 198
+      },
+      "TE-5": {
+        "E": 2166,
+        "B": 3557,
+        "D": 426,
+        "A": 544
+      },
+      "TM-1": {
+        "A": 1173,
+        "C": 1839,
+        "F": 2954,
+        "E": 298,
+        "B": 401,
+        "D": 28
+      },
+      "TM-2": {
+        "F": 2663,
+        "E": 667,
+        "B": 875,
+        "D": 489,
+        "A": 938,
+        "C": 1061
+      },
+      "TM-3": {
+        "A": 4007,
+        "F": 931,
+        "C": 683,
+        "D": 186,
+        "E": 236,
+        "B": 650
+      },
+      "TM-4": {
+        "D": 2391,
+        "C": 1669,
+        "A": 1462,
+        "B": 1171
+      },
+      "TM-5": {
+        "B": 2447,
+        "C": 3052,
+        "A": 1194
+      },
+      "TRJ-1": {
+        "F": 1101,
+        "A": 4375,
+        "B": 168,
+        "C": 202
+      },
+      "TRJ-2": {
+        "F": 1059,
+        "A": 4316,
+        "B": 203,
+        "C": 258,
+        "E": 6,
+        "D": 4
+      },
+      "TRJ-3": {
+        "F": 1057,
+        "B": 4603,
+        "C": 104,
+        "A": 80,
+        "E": 2
+      },
+      "TRJ-4": {
+        "D": 1173,
+        "A": 1353,
+        "B": 2103,
+        "C": 1217
+      }
+    },
+    "mcq_balance": {
+      "per_task": {
+        "SC-1": {
+          "option_count": 3,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.6340953234722845,
+          "min_option_fraction": 0.15344389660839683,
+          "imbalance_ratio_max_over_min": 4.132424537487829
+        },
+        "SC-2": {
+          "option_count": 2,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.5,
+          "max_option_fraction": 0.8824144628716569,
+          "min_option_fraction": 0.11758553712834305,
+          "imbalance_ratio_max_over_min": 7.504447268106734
+        },
+        "SC-3": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.3336321529956671,
+          "min_option_fraction": 0.010757507844016136,
+          "imbalance_ratio_max_over_min": 31.01388888888889
+        },
+        "SC-4": {
+          "option_count": 3,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.5329448677722994,
+          "min_option_fraction": 0.1214701927386822,
+          "imbalance_ratio_max_over_min": 4.387453874538745
+        },
+        "SC-5": {
+          "option_count": 3,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.6358882414462872,
+          "min_option_fraction": 0.09696698042731211,
+          "imbalance_ratio_max_over_min": 6.557781201848998
+        },
+        "SP-1": {
+          "option_count": 6,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.4017630360077693,
+          "min_option_fraction": 0.02480203197370387,
+          "imbalance_ratio_max_over_min": 16.198795180722893
+        },
+        "SP-2": {
+          "option_count": 8,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.125,
+          "max_option_fraction": 0.24443448378903332,
+          "min_option_fraction": 0.08292245629762439,
+          "imbalance_ratio_max_over_min": 2.947747747747748
+        },
+        "SP-3": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.522635589421784,
+          "min_option_fraction": 0.010458688181682354,
+          "imbalance_ratio_max_over_min": 49.97142857142857
+        },
+        "SP-4": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.2365157627371881,
+          "min_option_fraction": 0.17226953533542508,
+          "imbalance_ratio_max_over_min": 1.372940156114484
+        },
+        "SP-5": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.9136411175855371,
+          "min_option_fraction": 0.00014940983116689077,
+          "imbalance_ratio_max_over_min": 6115.0
+        },
+        "SP-6": {
+          "option_count": 2,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.5,
+          "max_option_fraction": 0.9796802629613028,
+          "min_option_fraction": 0.020319737038697147,
+          "imbalance_ratio_max_over_min": 48.213235294117645
+        },
+        "SU-1": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.38981024951441806,
+          "min_option_fraction": 0.08232481697295682,
+          "imbalance_ratio_max_over_min": 4.73502722323049
+        },
+        "SU-2": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.37397280741072764,
+          "min_option_fraction": 0.009711639025847901,
+          "imbalance_ratio_max_over_min": 38.50769230769231
+        },
+        "SU-3": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.4805020170327208,
+          "min_option_fraction": 0.018078589571193786,
+          "imbalance_ratio_max_over_min": 26.578512396694215
+        },
+        "SU-4": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.41042880621544897,
+          "min_option_fraction": 0.02450321231137009,
+          "imbalance_ratio_max_over_min": 16.75
+        },
+        "SU-5": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.41042880621544897,
+          "min_option_fraction": 0.031226654713880173,
+          "imbalance_ratio_max_over_min": 13.14354066985646
+        },
+        "SU-6": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.36665172568355,
+          "min_option_fraction": 0.08292245629762439,
+          "imbalance_ratio_max_over_min": 4.421621621621622
+        },
+        "TE-1": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.5314507694606305,
+          "min_option_fraction": 0.0421335723890632,
+          "imbalance_ratio_max_over_min": 12.613475177304965
+        },
+        "TE-2": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.5610339160316749,
+          "min_option_fraction": 0.08635888241446286,
+          "imbalance_ratio_max_over_min": 6.496539792387543
+        },
+        "TE-3": {
+          "option_count": 5,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.8352009562229195,
+          "min_option_fraction": 0.020319737038697147,
+          "imbalance_ratio_max_over_min": 41.10294117647059
+        },
+        "TE-4": {
+          "option_count": 6,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.4507694606305095,
+          "min_option_fraction": 0.019871507545196475,
+          "imbalance_ratio_max_over_min": 22.68421052631579
+        },
+        "TE-5": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.5314507694606305,
+          "min_option_fraction": 0.06364858807709547,
+          "imbalance_ratio_max_over_min": 8.349765258215962
+        },
+        "TM-1": {
+          "option_count": 6,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.44135664126699536,
+          "min_option_fraction": 0.004183475272672942,
+          "imbalance_ratio_max_over_min": 105.5
+        },
+        "TM-2": {
+          "option_count": 6,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.3978783803974302,
+          "min_option_fraction": 0.07306140744060959,
+          "imbalance_ratio_max_over_min": 5.445807770961145
+        },
+        "TM-3": {
+          "option_count": 6,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.5986851934857313,
+          "min_option_fraction": 0.027790228597041687,
+          "imbalance_ratio_max_over_min": 21.543010752688172
+        },
+        "TM-4": {
+          "option_count": 4,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.35723890632003585,
+          "min_option_fraction": 0.1749589122964291,
+          "imbalance_ratio_max_over_min": 2.0418445772843725
+        },
+        "TM-5": {
+          "option_count": 3,
+          "total_questions": 6693,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.4559988047213507,
+          "min_option_fraction": 0.1783953384132676,
+          "imbalance_ratio_max_over_min": 2.5561139028475712
+        },
+        "TRJ-1": {
+          "option_count": 4,
+          "total_questions": 5846,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.7483749572357167,
+          "min_option_fraction": 0.028737598357851522,
+          "imbalance_ratio_max_over_min": 26.041666666666668
+        },
+        "TRJ-2": {
+          "option_count": 6,
+          "total_questions": 5846,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.7382825863838522,
+          "min_option_fraction": 0.0006842285323297981,
+          "imbalance_ratio_max_over_min": 1079.0
+        },
+        "TRJ-3": {
+          "option_count": 5,
+          "total_questions": 5846,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.7873759835785152,
+          "min_option_fraction": 0.00034211426616489907,
+          "imbalance_ratio_max_over_min": 2301.5
+        },
+        "TRJ-4": {
+          "option_count": 4,
+          "total_questions": 5846,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3597331508723914,
+          "min_option_fraction": 0.2006500171057133,
+          "imbalance_ratio_max_over_min": 1.792838874680307
+        }
+      },
+      "aggregate": {
+        "task_count": 31,
+        "mean_max_option_fraction": 0.5336861351355325,
+        "median_max_option_fraction": 0.4805020170327208,
+        "mean_imbalance_ratio_max_over_min": 323.48725004567484,
+        "median_imbalance_ratio_max_over_min": 13.14354066985646
+      }
+    },
+    "scene_attribute_distribution": {
+      "risk": {
+        "Moderate risk": 4256,
+        "Low risk": 649,
+        "High risk": 1788
+      },
+      "road_type": {
+        "Parking lot / Off-road area": 1510,
+        "Straight urban/suburban road": 1741,
+        "Construction zone": 1137,
+        "Urban intersection / Crossroad": 2233,
+        "Highway / Expressway": 72
+      },
+      "time_of_day": {
+        "Daytime (adequate natural lighting)": 5906,
+        "Nighttime (relying on streetlights/headlights)": 787
+      },
+      "traffic_density": {
+        "Dense": 3567,
+        "Moderate": 2313,
+        "Sparse": 813
+      },
+      "weather": {
+        "Clear / Sunny": 4244,
+        "Snow / Ice": 1422,
+        "Rain / Wet road surface": 1027
+      }
+    }
+  },
+  "miniset": {
+    "group_count": 335,
+    "scene_count": 329,
+    "question_count": 11390,
+    "task_type_count": 34,
+    "complexity": {
+      "min": 23.353385035511554,
+      "max": 96.15884429709482,
+      "mean": 38.21457619012101,
+      "median": 34.947257032928206
+    },
+    "average_complexity_breakdown": {
+      "density": 7.537611940298508,
+      "diversity": 1.328955223880597,
+      "environment": 0.946865671641791,
+      "interaction": 9.026865671641792,
+      "motion": 6.5110447761194035,
+      "occlusion": 10.23134328358209,
+      "priority": 0.521143354300109,
+      "scene_layout": 1.6107462686567164,
+      "temporal": 0.5
+    },
+    "per_task_counts": {
+      "SC-1": 335,
+      "SC-2": 335,
+      "SC-3": 335,
+      "SC-4": 335,
+      "SC-5": 335,
+      "SP-1": 335,
+      "SP-2": 335,
+      "SP-3": 335,
+      "SP-3a": 335,
+      "SP-4": 335,
+      "SP-5": 335,
+      "SP-6": 335,
+      "SU-1": 335,
+      "SU-2": 335,
+      "SU-3": 335,
+      "SU-4": 335,
+      "SU-5": 335,
+      "SU-6": 335,
+      "TE-1": 335,
+      "TE-2": 335,
+      "TE-3": 335,
+      "TE-4": 335,
+      "TE-5": 335,
+      "TM-1": 335,
+      "TM-2": 335,
+      "TM-3": 335,
+      "TM-4": 335,
+      "TM-5": 335,
+      "TRJ-1": 335,
+      "TRJ-2": 335,
+      "TRJ-3": 335,
+      "TRJ-4": 335,
+      "TRJ-5": 335,
+      "TRJ-6": 335
+    },
+    "per_task_ground_truth_distribution": {
+      "SC-1": {
+        "D": 84,
+        "A": 195,
+        "B": 56
+      },
+      "SC-2": {
+        "A": 299,
+        "B": 36
+      },
+      "SC-3": {
+        "A": 125,
+        "B": 68,
+        "E": 84,
+        "D": 54,
+        "C": 4
+      },
+      "SC-4": {
+        "C": 258,
+        "B": 77
+      },
+      "SC-5": {
+        "C": 145,
+        "B": 186,
+        "A": 4
+      },
+      "SP-1": {
+        "B": 71,
+        "A": 129,
+        "E": 49,
+        "D": 30,
+        "C": 34,
+        "F": 22
+      },
+      "SP-2": {
+        "H": 64,
+        "D": 36,
+        "A": 50,
+        "G": 27,
+        "C": 44,
+        "B": 42,
+        "E": 38,
+        "F": 34
+      },
+      "SP-3": {
+        "B": 153,
+        "C": 53,
+        "D": 30,
+        "A": 95,
+        "E": 4
+      },
+      "SP-4": {
+        "C": 73,
+        "D": 56,
+        "A": 79,
+        "E": 60,
+        "B": 67
+      },
+      "SP-5": {
+        "A": 278,
+        "B": 36,
+        "C": 21
+      },
+      "SP-6": {
+        "A": 319,
+        "C": 16
+      },
+      "SU-1": {
+        "B": 96,
+        "C": 107,
+        "D": 97,
+        "A": 35
+      },
+      "SU-2": {
+        "A": 109,
+        "C": 82,
+        "F": 14,
+        "G": 50,
+        "B": 80
+      },
+      "SU-3": {
+        "B": 117,
+        "A": 124,
+        "C": 61,
+        "D": 33
+      },
+      "SU-4": {
+        "A": 102,
+        "B": 98,
+        "D": 90,
+        "C": 45
+      },
+      "SU-5": {
+        "B": 102,
+        "C": 98,
+        "F": 49,
+        "A": 86
+      },
+      "SU-6": {
+        "D": 156,
+        "B": 75,
+        "C": 94,
+        "A": 10
+      },
+      "TE-1": {
+        "A": 84,
+        "C": 34,
+        "D": 120,
+        "E": 65,
+        "B": 32
+      },
+      "TE-2": {
+        "A": 153,
+        "B": 65,
+        "C": 39,
+        "E": 35,
+        "D": 43
+      },
+      "TE-3": {
+        "A": 192,
+        "D": 55,
+        "B": 30,
+        "E": 16,
+        "C": 42
+      },
+      "TE-4": {
+        "B": 86,
+        "D": 97,
+        "E": 48,
+        "A": 45,
+        "F": 36,
+        "C": 23
+      },
+      "TE-5": {
+        "E": 88,
+        "D": 55,
+        "B": 120,
+        "A": 72
+      },
+      "TM-1": {
+        "C": 104,
+        "F": 106,
+        "B": 35,
+        "E": 23,
+        "A": 60,
+        "D": 7
+      },
+      "TM-2": {
+        "F": 100,
+        "D": 35,
+        "A": 54,
+        "C": 58,
+        "B": 52,
+        "E": 36
+      },
+      "TM-3": {
+        "A": 136,
+        "E": 41,
+        "F": 49,
+        "C": 46,
+        "D": 30,
+        "B": 33
+      },
+      "TM-4": {
+        "C": 72,
+        "A": 41,
+        "D": 177,
+        "B": 45
+      },
+      "TM-5": {
+        "C": 138,
+        "B": 124,
+        "A": 73
+      },
+      "TRJ-1": {
+        "A": 180,
+        "F": 95,
+        "B": 28,
+        "C": 32
+      },
+      "TRJ-2": {
+        "A": 153,
+        "F": 96,
+        "B": 35,
+        "C": 48,
+        "E": 1,
+        "D": 2
+      },
+      "TRJ-3": {
+        "B": 187,
+        "F": 94,
+        "A": 24,
+        "E": 2,
+        "C": 28
+      },
+      "TRJ-4": {
+        "B": 88,
+        "D": 101,
+        "A": 97,
+        "C": 49
+      }
+    },
+    "mcq_balance": {
+      "per_task": {
+        "SC-1": {
+          "option_count": 3,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.582089552238806,
+          "min_option_fraction": 0.16716417910447762,
+          "imbalance_ratio_max_over_min": 3.482142857142857
+        },
+        "SC-2": {
+          "option_count": 2,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.5,
+          "max_option_fraction": 0.8925373134328358,
+          "min_option_fraction": 0.10746268656716418,
+          "imbalance_ratio_max_over_min": 8.305555555555555
+        },
+        "SC-3": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.373134328358209,
+          "min_option_fraction": 0.011940298507462687,
+          "imbalance_ratio_max_over_min": 31.25
+        },
+        "SC-4": {
+          "option_count": 2,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.5,
+          "max_option_fraction": 0.7701492537313432,
+          "min_option_fraction": 0.2298507462686567,
+          "imbalance_ratio_max_over_min": 3.3506493506493507
+        },
+        "SC-5": {
+          "option_count": 3,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.5552238805970149,
+          "min_option_fraction": 0.011940298507462687,
+          "imbalance_ratio_max_over_min": 46.5
+        },
+        "SP-1": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.3850746268656716,
+          "min_option_fraction": 0.06567164179104477,
+          "imbalance_ratio_max_over_min": 5.863636363636363
+        },
+        "SP-2": {
+          "option_count": 8,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.125,
+          "max_option_fraction": 0.191044776119403,
+          "min_option_fraction": 0.08059701492537313,
+          "imbalance_ratio_max_over_min": 2.3703703703703702
+        },
+        "SP-3": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.45671641791044776,
+          "min_option_fraction": 0.011940298507462687,
+          "imbalance_ratio_max_over_min": 38.25
+        },
+        "SP-4": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.23582089552238805,
+          "min_option_fraction": 0.16716417910447762,
+          "imbalance_ratio_max_over_min": 1.4107142857142858
+        },
+        "SP-5": {
+          "option_count": 3,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.8298507462686567,
+          "min_option_fraction": 0.0626865671641791,
+          "imbalance_ratio_max_over_min": 13.238095238095237
+        },
+        "SP-6": {
+          "option_count": 2,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.5,
+          "max_option_fraction": 0.9522388059701492,
+          "min_option_fraction": 0.04776119402985075,
+          "imbalance_ratio_max_over_min": 19.9375
+        },
+        "SU-1": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3194029850746269,
+          "min_option_fraction": 0.1044776119402985,
+          "imbalance_ratio_max_over_min": 3.057142857142857
+        },
+        "SU-2": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.3253731343283582,
+          "min_option_fraction": 0.041791044776119404,
+          "imbalance_ratio_max_over_min": 7.785714285714286
+        },
+        "SU-3": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3701492537313433,
+          "min_option_fraction": 0.09850746268656717,
+          "imbalance_ratio_max_over_min": 3.757575757575758
+        },
+        "SU-4": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3044776119402985,
+          "min_option_fraction": 0.13432835820895522,
+          "imbalance_ratio_max_over_min": 2.2666666666666666
+        },
+        "SU-5": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3044776119402985,
+          "min_option_fraction": 0.14626865671641792,
+          "imbalance_ratio_max_over_min": 2.0816326530612246
+        },
+        "SU-6": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.46567164179104475,
+          "min_option_fraction": 0.029850746268656716,
+          "imbalance_ratio_max_over_min": 15.6
+        },
+        "TE-1": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.3582089552238806,
+          "min_option_fraction": 0.0955223880597015,
+          "imbalance_ratio_max_over_min": 3.75
+        },
+        "TE-2": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.45671641791044776,
+          "min_option_fraction": 0.1044776119402985,
+          "imbalance_ratio_max_over_min": 4.371428571428571
+        },
+        "TE-3": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.573134328358209,
+          "min_option_fraction": 0.04776119402985075,
+          "imbalance_ratio_max_over_min": 12.0
+        },
+        "TE-4": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.28955223880597014,
+          "min_option_fraction": 0.06865671641791045,
+          "imbalance_ratio_max_over_min": 4.217391304347826
+        },
+        "TE-5": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.3582089552238806,
+          "min_option_fraction": 0.16417910447761194,
+          "imbalance_ratio_max_over_min": 2.1818181818181817
+        },
+        "TM-1": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.3164179104477612,
+          "min_option_fraction": 0.020895522388059702,
+          "imbalance_ratio_max_over_min": 15.142857142857142
+        },
+        "TM-2": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.29850746268656714,
+          "min_option_fraction": 0.1044776119402985,
+          "imbalance_ratio_max_over_min": 2.857142857142857
+        },
+        "TM-3": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.4059701492537313,
+          "min_option_fraction": 0.08955223880597014,
+          "imbalance_ratio_max_over_min": 4.533333333333333
+        },
+        "TM-4": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.5283582089552239,
+          "min_option_fraction": 0.12238805970149254,
+          "imbalance_ratio_max_over_min": 4.317073170731708
+        },
+        "TM-5": {
+          "option_count": 3,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.3333333333333333,
+          "max_option_fraction": 0.41194029850746267,
+          "min_option_fraction": 0.21791044776119403,
+          "imbalance_ratio_max_over_min": 1.8904109589041096
+        },
+        "TRJ-1": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.5373134328358209,
+          "min_option_fraction": 0.08358208955223881,
+          "imbalance_ratio_max_over_min": 6.428571428571429
+        },
+        "TRJ-2": {
+          "option_count": 6,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.16666666666666666,
+          "max_option_fraction": 0.45671641791044776,
+          "min_option_fraction": 0.0029850746268656717,
+          "imbalance_ratio_max_over_min": 153.0
+        },
+        "TRJ-3": {
+          "option_count": 5,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.2,
+          "max_option_fraction": 0.5582089552238806,
+          "min_option_fraction": 0.005970149253731343,
+          "imbalance_ratio_max_over_min": 93.5
+        },
+        "TRJ-4": {
+          "option_count": 4,
+          "total_questions": 335,
+          "ideal_fraction_per_option": 0.25,
+          "max_option_fraction": 0.30149253731343284,
+          "min_option_fraction": 0.14626865671641792,
+          "imbalance_ratio_max_over_min": 2.061224489795918
+        }
+      },
+      "aggregate": {
+        "task_count": 31,
+        "mean_max_option_fraction": 0.45690900337024554,
+        "median_max_option_fraction": 0.4059701492537313,
+        "mean_imbalance_ratio_max_over_min": 16.734149925169543,
+        "median_imbalance_ratio_max_over_min": 4.371428571428571
+      }
+    },
+    "scene_attribute_distribution": {
+      "risk": {
+        "High risk": 145,
+        "Moderate risk": 186,
+        "Low risk": 4
+      },
+      "road_type": {
+        "Urban intersection / Crossroad": 125,
+        "Straight urban/suburban road": 68,
+        "Parking lot / Off-road area": 84,
+        "Construction zone": 54,
+        "Highway / Expressway": 4
+      },
+      "time_of_day": {
+        "Daytime (adequate natural lighting)": 299,
+        "Nighttime (relying on streetlights/headlights)": 36
+      },
+      "traffic_density": {
+        "Dense": 258,
+        "Moderate": 77
+      },
+      "weather": {
+        "Snow / Ice": 84,
+        "Clear / Sunny": 195,
+        "Rain / Wet road surface": 56
+      }
+    }
+  },
+  "retention": {
+    "group_fraction": 0.05005229344090841,
+    "scene_fraction": 0.3870588235294118,
+    "question_fraction": 0.051195613088816976
+  },
+  "comparison": {
+    "mcq_balance": {
+      "full_set_mean_max_option_fraction": 0.5336861351355325,
+      "miniset_mean_max_option_fraction": 0.45690900337024554,
+      "full_set_mean_imbalance_ratio": 323.48725004567484,
+      "miniset_mean_imbalance_ratio": 16.734149925169543
+    }
+  }
+}
