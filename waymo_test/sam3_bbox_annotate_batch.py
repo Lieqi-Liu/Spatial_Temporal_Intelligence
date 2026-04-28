@@ -44,6 +44,7 @@ DEFAULT_MASK_THRESHOLD = 0.5
 DEFAULT_MIN_BOX_AREA = 500.0
 DEFAULT_TOP_K = 10
 DEFAULT_PROMPT_BATCH_SIZE = 4
+DEFAULT_IMAGE_BATCH_SIZE = 1
 
 
 @dataclass
@@ -94,6 +95,12 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=DEFAULT_PROMPT_BATCH_SIZE,
         help="Number of prompts to process together for each image.",
+    )
+    parser.add_argument(
+        "--image-batch-size",
+        type=int,
+        default=DEFAULT_IMAGE_BATCH_SIZE,
+        help="Number of images to process together for each prompt batch.",
     )
     parser.add_argument(
         "--max-images",
@@ -174,6 +181,12 @@ def chunk_list(items: list[str], chunk_size: int) -> list[list[str]]:
     return [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
 
 
+def chunk_paths(items: list[Path], chunk_size: int) -> list[list[Path]]:
+    if chunk_size <= 0:
+        raise ValueError("--image-batch-size must be > 0")
+    return [items[i : i + chunk_size] for i in range(0, len(items), chunk_size)]
+
+
 def to_xywh(x1: float, y1: float, x2: float, y2: float) -> list[float]:
     w = max(0.0, x2 - x1)
     h = max(0.0, y2 - y1)
@@ -236,15 +249,33 @@ def select_top_k_annotations(
 def build_annotations_for_prompt_batch(
     model: Sam3Model,
     processor: Sam3Processor,
-    image: Image.Image,
+    images: list[Image.Image],
     prompts: list[str],
     device: str,
     score_threshold: float,
     mask_threshold: float,
     min_box_area: float,
-) -> list[BoxAnnotation]:
-    batched_images = [image] * len(prompts)
-    inputs = processor(images=batched_images, text=prompts, return_tensors="pt").to(device)
+) -> list[list[BoxAnnotation]]:
+    if not images:
+        return []
+    if not prompts:
+        return [[] for _ in images]
+
+    batched_images: list[Image.Image] = []
+    batched_prompts: list[str] = []
+    pair_to_image_idx: list[int] = []
+
+    for image_idx, image in enumerate(images):
+        for prompt in prompts:
+            batched_images.append(image)
+            batched_prompts.append(prompt)
+            pair_to_image_idx.append(image_idx)
+
+    inputs = processor(
+        images=batched_images,
+        text=batched_prompts,
+        return_tensors="pt",
+    ).to(device)
 
     with torch.no_grad():
         outputs = model(**inputs)
@@ -256,8 +287,8 @@ def build_annotations_for_prompt_batch(
         target_sizes=inputs.get("original_sizes").tolist(),
     )
 
-    annotations: list[BoxAnnotation] = []
-    for prompt, result in zip(prompts, results):
+    annotations_by_image: list[list[BoxAnnotation]] = [[] for _ in images]
+    for image_idx, prompt, result in zip(pair_to_image_idx, batched_prompts, results):
         boxes = result.get("boxes")
         scores = result.get("scores")
         if boxes is None or scores is None:
@@ -272,7 +303,7 @@ def build_annotations_for_prompt_batch(
             area = xywh[2] * xywh[3]
             if area < min_box_area:
                 continue
-            annotations.append(
+            annotations_by_image[image_idx].append(
                 BoxAnnotation(
                     label=prompt,
                     score=float(score),
@@ -280,7 +311,7 @@ def build_annotations_for_prompt_batch(
                     bbox_xywh=xywh,
                 )
             )
-    return annotations
+    return annotations_by_image
 
 
 def draw_boxes(image: Image.Image, boxes: Iterable[BoxAnnotation]) -> Image.Image:
@@ -351,51 +382,60 @@ def main() -> None:
 
     all_records: list[dict] = []
 
-    for idx, image_path in enumerate(
-        progress_iter(image_paths, total=len(image_paths), desc="Annotating Waymo images"),
-        start=1,
-    ):
-        image = Image.open(image_path).convert("RGB")
-        width, height = image.size
+    image_path_batches = chunk_paths(image_paths, args.image_batch_size)
+    processed = 0
 
-        image_annotations: list[BoxAnnotation] = []
+    for image_batch_paths in progress_iter(
+        image_path_batches,
+        total=len(image_path_batches),
+        desc="Annotating Waymo image batches",
+    ):
+        images = [Image.open(image_path).convert("RGB") for image_path in image_batch_paths]
+        image_annotations_batch: list[list[BoxAnnotation]] = [[] for _ in image_batch_paths]
+
         for prompt_batch in prompt_batches:
-            anns = build_annotations_for_prompt_batch(
+            batch_annotations = build_annotations_for_prompt_batch(
                 model=model,
                 processor=processor,
-                image=image,
+                images=images,
                 prompts=prompt_batch,
                 device=args.device,
                 score_threshold=args.score_threshold,
                 mask_threshold=args.mask_threshold,
                 min_box_area=args.min_box_area,
             )
-            image_annotations.extend(anns)
+            for image_idx, anns in enumerate(batch_annotations):
+                image_annotations_batch[image_idx].extend(anns)
 
-        image_annotations = select_top_k_annotations(
-            image_annotations,
-            image_width=width,
-            image_height=height,
-            top_k=args.top_k,
-        )
+        for image, image_path, image_annotations in zip(
+            images, image_batch_paths, image_annotations_batch
+        ):
+            width, height = image.size
+            image_annotations = select_top_k_annotations(
+                image_annotations,
+                image_width=width,
+                image_height=height,
+                top_k=args.top_k,
+            )
 
-        rel_path = image_path.relative_to(args.input_root).as_posix()
-        record = {
-            "image_path": rel_path,
-            "width": width,
-            "height": height,
-            "annotations": [asdict(ann) for ann in image_annotations],
-        }
-        all_records.append(record)
+            rel_path = image_path.relative_to(args.input_root).as_posix()
+            record = {
+                "image_path": rel_path,
+                "width": width,
+                "height": height,
+                "annotations": [asdict(ann) for ann in image_annotations],
+            }
+            all_records.append(record)
 
-        viz = draw_boxes(image, image_annotations)
-        viz_name = image_path.stem + "_boxes.jpg"
-        viz.save(args.viz_dir / viz_name, quality=95)
+            viz = draw_boxes(image, image_annotations)
+            viz_name = image_path.stem + "_boxes.jpg"
+            viz.save(args.viz_dir / viz_name, quality=95)
 
-        print(
-            f"[{idx}/{len(image_paths)}] {rel_path}: "
-            f"{len(image_annotations)} boxes"
-        )
+            processed += 1
+            print(
+                f"[{processed}/{len(image_paths)}] {rel_path}: "
+                f"{len(image_annotations)} boxes"
+            )
 
     output = {
         "model": "facebook/sam3",
@@ -403,6 +443,7 @@ def main() -> None:
         "image_glob": args.image_glob,
         "prompts": prompts,
         "prompt_batch_size": args.prompt_batch_size,
+        "image_batch_size": args.image_batch_size,
         "score_threshold": args.score_threshold,
         "mask_threshold": args.mask_threshold,
         "min_box_area": args.min_box_area,
