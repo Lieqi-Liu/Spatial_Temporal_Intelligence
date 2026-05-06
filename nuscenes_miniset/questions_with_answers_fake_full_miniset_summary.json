@@ -1,0 +1,2138 @@
+{
+  "headline_summary": {
+    "full_question_count": 8462,
+    "mini_question_count": 740,
+    "retention_percent": 8.744977546679273,
+    "scene_coverage": {
+      "selected_scene_count": 10,
+      "full_scene_count": 10,
+      "scene_fraction": 1.0
+    },
+    "mcq_accuracy": {
+      "full_set": 0.3516988062442608,
+      "miniset": 0.08421052631578947
+    },
+    "format_distribution": {
+      "full_set": {
+        "FRQ": 839,
+        "MCQ": 7623
+      },
+      "miniset": {
+        "FRQ": 170,
+        "MCQ": 570
+      }
+    },
+    "interpretation": "The miniset keeps all scenes represented while retaining a small fraction of questions and selecting substantially harder MCQ examples."
+  },
+  "meta": {
+    "description": "NuScenes miniset v2 summary",
+    "vlm_prior": {
+      "used": true,
+      "reason": "parsed_full_json",
+      "path": "/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/lieqiliu/questions_with_answers_fake_full_combined_qwen3vl8b.json",
+      "task_count": 40,
+      "example_count": 8462,
+      "hard_example_count": 5781,
+      "row_source": "tasks",
+      "frq_source_task_count": 9,
+      "frq_source_example_count": 839
+    }
+  },
+  "full_set": {
+    "question_count": 8462,
+    "scene_count": 10,
+    "per_task_counts": {
+      "SP-1": 316,
+      "SP-2": 316,
+      "SP-3": 316,
+      "SP-3a": 237,
+      "SP-4": 316,
+      "SP-5": 316,
+      "SP-6": 316,
+      "SP-7": 79,
+      "SU-1": 316,
+      "SU-2": 316,
+      "SU-3": 316,
+      "SU-4": 316,
+      "SU-5": 316,
+      "SU-6": 316,
+      "SU-7": 79,
+      "TE-1": 316,
+      "TE-2": 316,
+      "TE-3": 316,
+      "TE-4": 316,
+      "TE-5": 316,
+      "TE-6": 79,
+      "TM-1": 316,
+      "TM-2": 316,
+      "TM-3": 316,
+      "TM-4": 316,
+      "TM-5": 316,
+      "TM-6": 79,
+      "TRJ-1": 69,
+      "TRJ-2": 69,
+      "TRJ-3": 69,
+      "TRJ-4": 69,
+      "TRJ-5": 69,
+      "TRJ-6": 69,
+      "TRJ-7": 69,
+      "SC-1": 79,
+      "SC-2": 79,
+      "SC-3": 79,
+      "SC-4": 79,
+      "SC-5": 79,
+      "SC-6": 79
+    },
+    "mcq_balance": {
+      "per_task": {
+        "SP-1": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 118,
+            "B": 120,
+            "C": 19,
+            "D": 8,
+            "E": 47,
+            "F": 4
+          },
+          "max_option_fraction": 0.379746835443038,
+          "imbalance_ratio_max_over_min": 30.0
+        },
+        "SP-2": {
+          "total_questions": 316,
+          "option_count": 8,
+          "distribution": {
+            "A": 75,
+            "B": 25,
+            "C": 57,
+            "D": 4,
+            "E": 29,
+            "F": 14,
+            "G": 34,
+            "H": 78
+          },
+          "max_option_fraction": 0.2468354430379747,
+          "imbalance_ratio_max_over_min": 19.5
+        },
+        "SP-3": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 6,
+            "B": 42,
+            "C": 94,
+            "D": 87,
+            "E": 87
+          },
+          "max_option_fraction": 0.2974683544303797,
+          "imbalance_ratio_max_over_min": 15.666666666666666
+        },
+        "SP-4": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 32,
+            "B": 21,
+            "C": 21,
+            "D": 73,
+            "E": 169
+          },
+          "max_option_fraction": 0.5348101265822784,
+          "imbalance_ratio_max_over_min": 8.047619047619047
+        },
+        "SP-5": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 173,
+            "B": 35,
+            "C": 80,
+            "D": 28
+          },
+          "max_option_fraction": 0.5474683544303798,
+          "imbalance_ratio_max_over_min": 6.178571428571429
+        },
+        "SP-6": {
+          "total_questions": 316,
+          "option_count": 3,
+          "distribution": {
+            "A": 295,
+            "C": 21
+          },
+          "max_option_fraction": 0.9335443037974683,
+          "imbalance_ratio_max_over_min": 14.047619047619047
+        },
+        "SU-1": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 14,
+            "B": 17,
+            "C": 237,
+            "D": 48
+          },
+          "max_option_fraction": 0.75,
+          "imbalance_ratio_max_over_min": 16.928571428571427
+        },
+        "SU-2": {
+          "total_questions": 316,
+          "option_count": 7,
+          "distribution": {
+            "A": 56,
+            "B": 54,
+            "C": 20,
+            "F": 1,
+            "G": 185
+          },
+          "max_option_fraction": 0.5854430379746836,
+          "imbalance_ratio_max_over_min": 185.0
+        },
+        "SU-3": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 180,
+            "B": 121,
+            "C": 15
+          },
+          "max_option_fraction": 0.569620253164557,
+          "imbalance_ratio_max_over_min": 12.0
+        },
+        "SU-4": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 85,
+            "B": 30,
+            "C": 6,
+            "D": 195
+          },
+          "max_option_fraction": 0.6170886075949367,
+          "imbalance_ratio_max_over_min": 32.5
+        },
+        "SU-5": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 200,
+            "B": 85,
+            "C": 30,
+            "F": 1
+          },
+          "max_option_fraction": 0.6329113924050633,
+          "imbalance_ratio_max_over_min": 200.0
+        },
+        "SU-6": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "B": 120,
+            "C": 92,
+            "D": 104
+          },
+          "max_option_fraction": 0.379746835443038,
+          "imbalance_ratio_max_over_min": 1.3043478260869565
+        },
+        "TE-1": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 57,
+            "B": 11,
+            "C": 23,
+            "D": 190,
+            "E": 35
+          },
+          "max_option_fraction": 0.6012658227848101,
+          "imbalance_ratio_max_over_min": 17.272727272727273
+        },
+        "TE-2": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 184,
+            "B": 51,
+            "C": 40,
+            "D": 28,
+            "E": 13
+          },
+          "max_option_fraction": 0.5822784810126582,
+          "imbalance_ratio_max_over_min": 14.153846153846153
+        },
+        "TE-3": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 236,
+            "B": 8,
+            "C": 22,
+            "D": 29,
+            "E": 21
+          },
+          "max_option_fraction": 0.7468354430379747,
+          "imbalance_ratio_max_over_min": 29.5
+        },
+        "TE-4": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 115,
+            "B": 76,
+            "C": 16,
+            "D": 84,
+            "E": 25
+          },
+          "max_option_fraction": 0.3639240506329114,
+          "imbalance_ratio_max_over_min": 7.1875
+        },
+        "TE-5": {
+          "total_questions": 316,
+          "option_count": 5,
+          "distribution": {
+            "A": 30,
+            "B": 190,
+            "D": 29,
+            "E": 67
+          },
+          "max_option_fraction": 0.6012658227848101,
+          "imbalance_ratio_max_over_min": 6.551724137931035
+        },
+        "TM-1": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 44,
+            "B": 12,
+            "C": 104,
+            "E": 4,
+            "F": 152
+          },
+          "max_option_fraction": 0.4810126582278481,
+          "imbalance_ratio_max_over_min": 38.0
+        },
+        "TM-2": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 78,
+            "B": 26,
+            "C": 57,
+            "D": 3,
+            "E": 32,
+            "F": 120
+          },
+          "max_option_fraction": 0.379746835443038,
+          "imbalance_ratio_max_over_min": 40.0
+        },
+        "TM-3": {
+          "total_questions": 316,
+          "option_count": 6,
+          "distribution": {
+            "A": 170,
+            "B": 30,
+            "C": 25,
+            "D": 17,
+            "E": 20,
+            "F": 54
+          },
+          "max_option_fraction": 0.5379746835443038,
+          "imbalance_ratio_max_over_min": 10.0
+        },
+        "TM-4": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 24,
+            "B": 44,
+            "C": 92,
+            "D": 156
+          },
+          "max_option_fraction": 0.4936708860759494,
+          "imbalance_ratio_max_over_min": 6.5
+        },
+        "TM-5": {
+          "total_questions": 316,
+          "option_count": 4,
+          "distribution": {
+            "A": 35,
+            "B": 89,
+            "C": 192
+          },
+          "max_option_fraction": 0.6075949367088608,
+          "imbalance_ratio_max_over_min": 5.485714285714286
+        },
+        "TRJ-1": {
+          "total_questions": 69,
+          "option_count": 6,
+          "distribution": {
+            "A": 44,
+            "B": 5,
+            "C": 2,
+            "F": 18
+          },
+          "max_option_fraction": 0.6376811594202898,
+          "imbalance_ratio_max_over_min": 22.0
+        },
+        "TRJ-2": {
+          "total_questions": 69,
+          "option_count": 6,
+          "distribution": {
+            "A": 44,
+            "B": 5,
+            "C": 2,
+            "F": 18
+          },
+          "max_option_fraction": 0.6376811594202898,
+          "imbalance_ratio_max_over_min": 22.0
+        },
+        "TRJ-3": {
+          "total_questions": 69,
+          "option_count": 6,
+          "distribution": {
+            "A": 1,
+            "B": 49,
+            "C": 1,
+            "F": 18
+          },
+          "max_option_fraction": 0.7101449275362319,
+          "imbalance_ratio_max_over_min": 49.0
+        },
+        "TRJ-4": {
+          "total_questions": 69,
+          "option_count": 4,
+          "distribution": {
+            "A": 15,
+            "B": 23,
+            "C": 12,
+            "D": 19
+          },
+          "max_option_fraction": 0.3333333333333333,
+          "imbalance_ratio_max_over_min": 1.9166666666666667
+        },
+        "SC-1": {
+          "total_questions": 79,
+          "option_count": 5,
+          "distribution": {
+            "A": 39,
+            "B": 8,
+            "D": 32
+          },
+          "max_option_fraction": 0.4936708860759494,
+          "imbalance_ratio_max_over_min": 4.875
+        },
+        "SC-2": {
+          "total_questions": 79,
+          "option_count": 3,
+          "distribution": {
+            "A": 55,
+            "B": 24
+          },
+          "max_option_fraction": 0.6962025316455697,
+          "imbalance_ratio_max_over_min": 2.2916666666666665
+        },
+        "SC-3": {
+          "total_questions": 79,
+          "option_count": 5,
+          "distribution": {
+            "A": 24,
+            "B": 16,
+            "D": 23,
+            "E": 16
+          },
+          "max_option_fraction": 0.3037974683544304,
+          "imbalance_ratio_max_over_min": 1.5
+        },
+        "SC-4": {
+          "total_questions": 79,
+          "option_count": 3,
+          "distribution": {
+            "B": 24,
+            "C": 55
+          },
+          "max_option_fraction": 0.6962025316455697,
+          "imbalance_ratio_max_over_min": 2.2916666666666665
+        },
+        "SC-5": {
+          "total_questions": 79,
+          "option_count": 3,
+          "distribution": {
+            "B": 32,
+            "C": 47
+          },
+          "max_option_fraction": 0.5949367088607594,
+          "imbalance_ratio_max_over_min": 1.46875
+        }
+      },
+      "mean_max_option_fraction": 0.5475452861564318,
+      "mean_imbalance_ratio": 26.553827654688817
+    },
+    "accuracy": {
+      "mcq_total_count": 7623,
+      "mcq_answered_count": 7623,
+      "mcq_correct_count": 2681,
+      "mcq_accuracy": 0.3516988062442608,
+      "mcq_per_task": {
+        "SC-1": {
+          "answered_count": 79,
+          "correct_count": 22,
+          "accuracy": 0.27848101265822783
+        },
+        "SC-2": {
+          "answered_count": 79,
+          "correct_count": 79,
+          "accuracy": 1.0
+        },
+        "SC-3": {
+          "answered_count": 79,
+          "correct_count": 35,
+          "accuracy": 0.4430379746835443
+        },
+        "SC-4": {
+          "answered_count": 79,
+          "correct_count": 13,
+          "accuracy": 0.16455696202531644
+        },
+        "SC-5": {
+          "answered_count": 79,
+          "correct_count": 21,
+          "accuracy": 0.26582278481012656
+        },
+        "SP-1": {
+          "answered_count": 316,
+          "correct_count": 63,
+          "accuracy": 0.19936708860759494
+        },
+        "SP-2": {
+          "answered_count": 316,
+          "correct_count": 134,
+          "accuracy": 0.4240506329113924
+        },
+        "SP-3": {
+          "answered_count": 316,
+          "correct_count": 89,
+          "accuracy": 0.28164556962025317
+        },
+        "SP-4": {
+          "answered_count": 316,
+          "correct_count": 36,
+          "accuracy": 0.11392405063291139
+        },
+        "SP-5": {
+          "answered_count": 316,
+          "correct_count": 97,
+          "accuracy": 0.3069620253164557
+        },
+        "SP-6": {
+          "answered_count": 316,
+          "correct_count": 234,
+          "accuracy": 0.740506329113924
+        },
+        "SU-1": {
+          "answered_count": 316,
+          "correct_count": 192,
+          "accuracy": 0.6075949367088608
+        },
+        "SU-2": {
+          "answered_count": 316,
+          "correct_count": 17,
+          "accuracy": 0.05379746835443038
+        },
+        "SU-3": {
+          "answered_count": 316,
+          "correct_count": 163,
+          "accuracy": 0.5158227848101266
+        },
+        "SU-4": {
+          "answered_count": 316,
+          "correct_count": 26,
+          "accuracy": 0.08227848101265822
+        },
+        "SU-5": {
+          "answered_count": 316,
+          "correct_count": 132,
+          "accuracy": 0.4177215189873418
+        },
+        "SU-6": {
+          "answered_count": 316,
+          "correct_count": 95,
+          "accuracy": 0.30063291139240506
+        },
+        "TE-1": {
+          "answered_count": 316,
+          "correct_count": 69,
+          "accuracy": 0.21835443037974683
+        },
+        "TE-2": {
+          "answered_count": 316,
+          "correct_count": 161,
+          "accuracy": 0.509493670886076
+        },
+        "TE-3": {
+          "answered_count": 316,
+          "correct_count": 171,
+          "accuracy": 0.5411392405063291
+        },
+        "TE-4": {
+          "answered_count": 316,
+          "correct_count": 53,
+          "accuracy": 0.16772151898734178
+        },
+        "TE-5": {
+          "answered_count": 316,
+          "correct_count": 103,
+          "accuracy": 0.3259493670886076
+        },
+        "TM-1": {
+          "answered_count": 316,
+          "correct_count": 86,
+          "accuracy": 0.2721518987341772
+        },
+        "TM-2": {
+          "answered_count": 316,
+          "correct_count": 119,
+          "accuracy": 0.37658227848101267
+        },
+        "TM-3": {
+          "answered_count": 316,
+          "correct_count": 65,
+          "accuracy": 0.20569620253164558
+        },
+        "TM-4": {
+          "answered_count": 316,
+          "correct_count": 47,
+          "accuracy": 0.14873417721518986
+        },
+        "TM-5": {
+          "answered_count": 316,
+          "correct_count": 187,
+          "accuracy": 0.5917721518987342
+        },
+        "TRJ-1": {
+          "answered_count": 69,
+          "correct_count": 43,
+          "accuracy": 0.6231884057971014
+        },
+        "TRJ-2": {
+          "answered_count": 69,
+          "correct_count": 45,
+          "accuracy": 0.6521739130434783
+        },
+        "TRJ-3": {
+          "answered_count": 69,
+          "correct_count": 61,
+          "accuracy": 0.8840579710144928
+        },
+        "TRJ-4": {
+          "answered_count": 69,
+          "correct_count": 23,
+          "accuracy": 0.3333333333333333
+        }
+      },
+      "frq_total_count": 839,
+      "frq_response_count": 839,
+      "frq_bleurt_count": 839,
+      "frq_bleurt_mean": -0.583302093667552
+    },
+    "hardness": {
+      "mcq_hard_count": 4942,
+      "mcq_hard_fraction": 0.6483011937557392,
+      "frq_mean_response_hardness": 0.8381753588803353,
+      "frq_max_response_hardness": 1.0
+    },
+    "distributions": {
+      "by_question_id": {
+        "SC-1": 79,
+        "SC-2": 79,
+        "SC-3": 79,
+        "SC-4": 79,
+        "SC-5": 79,
+        "SC-6": 79,
+        "SP-1": 316,
+        "SP-2": 316,
+        "SP-3": 316,
+        "SP-3a": 237,
+        "SP-4": 316,
+        "SP-5": 316,
+        "SP-6": 316,
+        "SP-7": 79,
+        "SU-1": 316,
+        "SU-2": 316,
+        "SU-3": 316,
+        "SU-4": 316,
+        "SU-5": 316,
+        "SU-6": 316,
+        "SU-7": 79,
+        "TE-1": 316,
+        "TE-2": 316,
+        "TE-3": 316,
+        "TE-4": 316,
+        "TE-5": 316,
+        "TE-6": 79,
+        "TM-1": 316,
+        "TM-2": 316,
+        "TM-3": 316,
+        "TM-4": 316,
+        "TM-5": 316,
+        "TM-6": 79,
+        "TRJ-1": 69,
+        "TRJ-2": 69,
+        "TRJ-3": 69,
+        "TRJ-4": 69,
+        "TRJ-5": 69,
+        "TRJ-6": 69,
+        "TRJ-7": 69
+      },
+      "by_task_category": {
+        "scene-context": 474,
+        "space-perception": 2212,
+        "space-understanding": 1975,
+        "time-extrapolation": 1659,
+        "time-memory": 1659,
+        "trajectory-prediction": 483
+      },
+      "by_question_format": {
+        "FRQ": 839,
+        "MCQ": 7623
+      },
+      "by_source_dataset": {
+        "nuscenes_mini": 2054,
+        "rwigle": 6408
+      },
+      "by_scene": {
+        "scene_002": 857,
+        "scene_003": 857,
+        "scene_004": 857,
+        "scene_005": 857,
+        "scene_006": 857,
+        "scene_007": 857,
+        "scene_008": 857,
+        "scene_009": 857,
+        "scene_010": 857,
+        "scene_001": 749
+      }
+    }
+  },
+  "miniset": {
+    "question_count": 740,
+    "scene_count": 10,
+    "per_task_counts": {
+      "SC-1": 10,
+      "SC-2": 10,
+      "SC-3": 10,
+      "SC-4": 10,
+      "SC-5": 10,
+      "SC-6": 10,
+      "SP-3a": 20,
+      "SP-7": 20,
+      "SU-7": 20,
+      "TE-6": 20,
+      "TM-6": 20,
+      "TRJ-5": 20,
+      "TRJ-6": 20,
+      "TRJ-7": 20,
+      "SU-2": 20,
+      "SU-4": 20,
+      "SP-4": 20,
+      "TM-4": 20,
+      "TE-4": 20,
+      "SP-1": 20,
+      "TM-3": 20,
+      "TE-1": 20,
+      "TM-1": 20,
+      "SP-3": 20,
+      "SU-6": 20,
+      "SP-5": 20,
+      "TE-5": 20,
+      "TRJ-4": 20,
+      "TM-2": 20,
+      "SU-5": 20,
+      "SP-2": 20,
+      "TE-2": 20,
+      "SU-3": 20,
+      "TE-3": 20,
+      "TM-5": 20,
+      "SU-1": 20,
+      "TRJ-1": 20,
+      "TRJ-2": 20,
+      "SP-6": 20,
+      "TRJ-3": 20
+    },
+    "mcq_balance": {
+      "per_task": {
+        "SC-1": {
+          "total_questions": 10,
+          "option_count": 5,
+          "distribution": {
+            "A": 2,
+            "B": 2,
+            "C": 2,
+            "D": 2,
+            "E": 2
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SC-2": {
+          "total_questions": 10,
+          "option_count": 3,
+          "distribution": {
+            "A": 4,
+            "B": 3,
+            "C": 3
+          },
+          "max_option_fraction": 0.4,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SC-3": {
+          "total_questions": 10,
+          "option_count": 5,
+          "distribution": {
+            "A": 2,
+            "B": 2,
+            "C": 2,
+            "D": 2,
+            "E": 2
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SC-4": {
+          "total_questions": 10,
+          "option_count": 3,
+          "distribution": {
+            "A": 4,
+            "B": 3,
+            "C": 3
+          },
+          "max_option_fraction": 0.4,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SC-5": {
+          "total_questions": 10,
+          "option_count": 3,
+          "distribution": {
+            "A": 4,
+            "B": 3,
+            "C": 3
+          },
+          "max_option_fraction": 0.4,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SU-2": {
+          "total_questions": 20,
+          "option_count": 7,
+          "distribution": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3,
+            "G": 2
+          },
+          "max_option_fraction": 0.15,
+          "imbalance_ratio_max_over_min": 1.5
+        },
+        "SU-4": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SP-4": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TM-4": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TE-4": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SP-1": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "TM-3": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "TE-1": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TM-1": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SP-3": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SU-6": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SP-5": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TE-5": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TRJ-4": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TM-2": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SU-5": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SP-2": {
+          "total_questions": 20,
+          "option_count": 8,
+          "distribution": {
+            "A": 3,
+            "B": 3,
+            "C": 3,
+            "D": 3,
+            "E": 2,
+            "F": 2,
+            "G": 2,
+            "H": 2
+          },
+          "max_option_fraction": 0.15,
+          "imbalance_ratio_max_over_min": 1.5
+        },
+        "TE-2": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SU-3": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TE-3": {
+          "total_questions": 20,
+          "option_count": 5,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 4,
+            "D": 4,
+            "E": 4
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TM-5": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "SU-1": {
+          "total_questions": 20,
+          "option_count": 4,
+          "distribution": {
+            "A": 5,
+            "B": 5,
+            "C": 5,
+            "D": 5
+          },
+          "max_option_fraction": 0.25,
+          "imbalance_ratio_max_over_min": 1.0
+        },
+        "TRJ-1": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "TRJ-2": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        },
+        "SP-6": {
+          "total_questions": 20,
+          "option_count": 3,
+          "distribution": {
+            "A": 7,
+            "B": 7,
+            "C": 6
+          },
+          "max_option_fraction": 0.35,
+          "imbalance_ratio_max_over_min": 1.1666666666666667
+        },
+        "TRJ-3": {
+          "total_questions": 20,
+          "option_count": 6,
+          "distribution": {
+            "A": 4,
+            "B": 4,
+            "C": 3,
+            "D": 3,
+            "E": 3,
+            "F": 3
+          },
+          "max_option_fraction": 0.2,
+          "imbalance_ratio_max_over_min": 1.3333333333333333
+        }
+      },
+      "mean_max_option_fraction": 0.2338709677419355,
+      "mean_imbalance_ratio": 1.1666666666666667
+    },
+    "accuracy": {
+      "mcq_total_count": 570,
+      "mcq_answered_count": 570,
+      "mcq_correct_count": 48,
+      "mcq_accuracy": 0.08421052631578947,
+      "mcq_per_task": {
+        "SC-1": {
+          "answered_count": 10,
+          "correct_count": 2,
+          "accuracy": 0.2
+        },
+        "SC-2": {
+          "answered_count": 10,
+          "correct_count": 10,
+          "accuracy": 1.0
+        },
+        "SC-3": {
+          "answered_count": 10,
+          "correct_count": 3,
+          "accuracy": 0.3
+        },
+        "SC-4": {
+          "answered_count": 10,
+          "correct_count": 1,
+          "accuracy": 0.1
+        },
+        "SC-5": {
+          "answered_count": 10,
+          "correct_count": 2,
+          "accuracy": 0.2
+        },
+        "SP-1": {
+          "answered_count": 20,
+          "correct_count": 2,
+          "accuracy": 0.1
+        },
+        "SP-2": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SP-3": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SP-4": {
+          "answered_count": 20,
+          "correct_count": 1,
+          "accuracy": 0.05
+        },
+        "SP-5": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SP-6": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SU-1": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SU-2": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SU-3": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SU-4": {
+          "answered_count": 20,
+          "correct_count": 1,
+          "accuracy": 0.05
+        },
+        "SU-5": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "SU-6": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TE-1": {
+          "answered_count": 20,
+          "correct_count": 1,
+          "accuracy": 0.05
+        },
+        "TE-2": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TE-3": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TE-4": {
+          "answered_count": 20,
+          "correct_count": 2,
+          "accuracy": 0.1
+        },
+        "TE-5": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TM-1": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TM-2": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TM-3": {
+          "answered_count": 20,
+          "correct_count": 2,
+          "accuracy": 0.1
+        },
+        "TM-4": {
+          "answered_count": 20,
+          "correct_count": 3,
+          "accuracy": 0.15
+        },
+        "TM-5": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        },
+        "TRJ-1": {
+          "answered_count": 20,
+          "correct_count": 2,
+          "accuracy": 0.1
+        },
+        "TRJ-2": {
+          "answered_count": 20,
+          "correct_count": 4,
+          "accuracy": 0.2
+        },
+        "TRJ-3": {
+          "answered_count": 20,
+          "correct_count": 12,
+          "accuracy": 0.6
+        },
+        "TRJ-4": {
+          "answered_count": 20,
+          "correct_count": 0,
+          "accuracy": 0.0
+        }
+      },
+      "frq_total_count": 170,
+      "frq_response_count": 170,
+      "frq_bleurt_count": 170,
+      "frq_bleurt_mean": -0.3984879830304314
+    },
+    "hardness": {
+      "mcq_hard_count": 522,
+      "mcq_hard_fraction": 0.9157894736842105,
+      "frq_mean_response_hardness": 0.8680927194259306,
+      "frq_max_response_hardness": 1.0
+    },
+    "distributions": {
+      "by_question_id": {
+        "SC-1": 10,
+        "SC-2": 10,
+        "SC-3": 10,
+        "SC-4": 10,
+        "SC-5": 10,
+        "SC-6": 10,
+        "SP-1": 20,
+        "SP-2": 20,
+        "SP-3": 20,
+        "SP-3a": 20,
+        "SP-4": 20,
+        "SP-5": 20,
+        "SP-6": 20,
+        "SP-7": 20,
+        "SU-1": 20,
+        "SU-2": 20,
+        "SU-3": 20,
+        "SU-4": 20,
+        "SU-5": 20,
+        "SU-6": 20,
+        "SU-7": 20,
+        "TE-1": 20,
+        "TE-2": 20,
+        "TE-3": 20,
+        "TE-4": 20,
+        "TE-5": 20,
+        "TE-6": 20,
+        "TM-1": 20,
+        "TM-2": 20,
+        "TM-3": 20,
+        "TM-4": 20,
+        "TM-5": 20,
+        "TM-6": 20,
+        "TRJ-1": 20,
+        "TRJ-2": 20,
+        "TRJ-3": 20,
+        "TRJ-4": 20,
+        "TRJ-5": 20,
+        "TRJ-6": 20,
+        "TRJ-7": 20
+      },
+      "by_task_category": {
+        "scene-context": 60,
+        "space-perception": 160,
+        "space-understanding": 140,
+        "time-extrapolation": 120,
+        "time-memory": 120,
+        "trajectory-prediction": 140
+      },
+      "by_question_format": {
+        "FRQ": 170,
+        "MCQ": 570
+      },
+      "by_source_dataset": {
+        "nuscenes_mini": 81,
+        "rwigle": 659
+      },
+      "by_scene": {
+        "scene_007": 77,
+        "scene_005": 76,
+        "scene_009": 75,
+        "scene_010": 75,
+        "scene_004": 74,
+        "scene_001": 73,
+        "scene_003": 73,
+        "scene_008": 73,
+        "scene_002": 72,
+        "scene_006": 72
+      }
+    },
+    "scene_distribution": {
+      "selected_scene_count": 10,
+      "full_scene_count": 10,
+      "scene_fraction": 1.0,
+      "top_selected_scenes": {
+        "scene_007": 77,
+        "scene_005": 76,
+        "scene_009": 75,
+        "scene_010": 75,
+        "scene_004": 74,
+        "scene_001": 73,
+        "scene_003": 73,
+        "scene_008": 73,
+        "scene_002": 72,
+        "scene_006": 72
+      }
+    },
+    "representativeness": {
+      "task_retention": {
+        "SC-1": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SC-2": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SC-3": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SC-4": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SC-5": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SC-6": {
+          "full_set": 79,
+          "miniset": 10,
+          "retention_fraction": 0.12658227848101267
+        },
+        "SP-1": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-2": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-3": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-3a": {
+          "full_set": 237,
+          "miniset": 20,
+          "retention_fraction": 0.08438818565400844
+        },
+        "SP-4": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-5": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-6": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SP-7": {
+          "full_set": 79,
+          "miniset": 20,
+          "retention_fraction": 0.25316455696202533
+        },
+        "SU-1": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-2": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-3": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-4": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-5": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-6": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "SU-7": {
+          "full_set": 79,
+          "miniset": 20,
+          "retention_fraction": 0.25316455696202533
+        },
+        "TE-1": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TE-2": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TE-3": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TE-4": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TE-5": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TE-6": {
+          "full_set": 79,
+          "miniset": 20,
+          "retention_fraction": 0.25316455696202533
+        },
+        "TM-1": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TM-2": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TM-3": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TM-4": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TM-5": {
+          "full_set": 316,
+          "miniset": 20,
+          "retention_fraction": 0.06329113924050633
+        },
+        "TM-6": {
+          "full_set": 79,
+          "miniset": 20,
+          "retention_fraction": 0.25316455696202533
+        },
+        "TRJ-1": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-2": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-3": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-4": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-5": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-6": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        },
+        "TRJ-7": {
+          "full_set": 69,
+          "miniset": 20,
+          "retention_fraction": 0.2898550724637681
+        }
+      },
+      "scene_coverage": {
+        "full_scene_count": 10,
+        "selected_scene_count": 10,
+        "scene_fraction": 1.0
+      },
+      "scene_concentration": {
+        "full_set": {
+          "stats": {
+            "max": 857,
+            "mean": 846.2,
+            "median": 857.0
+          },
+          "scene_count_histogram": {
+            "749": 1,
+            "857": 9
+          },
+          "top_scenes": {
+            "scene_002": 857,
+            "scene_003": 857,
+            "scene_004": 857,
+            "scene_005": 857,
+            "scene_006": 857,
+            "scene_007": 857,
+            "scene_008": 857,
+            "scene_009": 857,
+            "scene_010": 857,
+            "scene_001": 749
+          }
+        },
+        "miniset": {
+          "stats": {
+            "max": 77,
+            "mean": 74,
+            "median": 73.5
+          },
+          "scene_count_histogram": {
+            "72": 2,
+            "73": 3,
+            "74": 1,
+            "75": 2,
+            "76": 1,
+            "77": 1
+          },
+          "top_scenes": {
+            "scene_007": 77,
+            "scene_005": 76,
+            "scene_009": 75,
+            "scene_010": 75,
+            "scene_004": 74,
+            "scene_001": 73,
+            "scene_003": 73,
+            "scene_008": 73,
+            "scene_002": 72,
+            "scene_006": 72
+          }
+        }
+      },
+      "group_redundancy": {
+        "full_set": {
+          "unique_scene_groups": 237,
+          "exact_group_reuse_count": 8225,
+          "reused_exact_groups_top25": {
+            "scene_001:group_001": 62,
+            "scene_001:group_002": 62,
+            "scene_001:group_003": 62,
+            "scene_001:group_004": 62,
+            "scene_001:group_005": 62,
+            "scene_001:group_006": 62,
+            "scene_002:group_001": 62,
+            "scene_002:group_002": 62,
+            "scene_002:group_003": 62,
+            "scene_002:group_004": 62,
+            "scene_002:group_005": 62,
+            "scene_002:group_006": 62,
+            "scene_002:group_007": 62,
+            "scene_003:group_001": 62,
+            "scene_003:group_002": 62,
+            "scene_003:group_003": 62,
+            "scene_003:group_004": 62,
+            "scene_003:group_005": 62,
+            "scene_003:group_006": 62,
+            "scene_003:group_007": 62,
+            "scene_004:group_001": 62,
+            "scene_004:group_002": 62,
+            "scene_004:group_003": 62,
+            "scene_004:group_004": 62,
+            "scene_004:group_005": 62
+          },
+          "near_group_adjacent_pair_count": 148
+        },
+        "miniset": {
+          "unique_scene_groups": 237,
+          "exact_group_reuse_count": 503,
+          "reused_exact_groups_top25": {
+            "scene_002:group_008_obj02": 13,
+            "scene_005:group_008_obj02": 13,
+            "scene_001:group_007_obj02": 11,
+            "scene_001:group_006_obj02": 10,
+            "scene_005:group_007_obj02": 10,
+            "scene_007:group_008_obj02": 10,
+            "scene_008:group_007_obj02": 10,
+            "scene_009:group_008_obj02": 10,
+            "scene_010:group_008_obj02": 10,
+            "scene_002:group_008_obj01": 10,
+            "scene_004:group_008_obj01": 10,
+            "scene_003:group_008_obj02": 9,
+            "scene_008:group_008_obj02": 9,
+            "scene_003:group_008_obj01": 9,
+            "scene_010:group_008_obj01": 9,
+            "scene_006:group_007_obj02": 8,
+            "scene_007:group_007_obj02": 8,
+            "scene_002:group_007": 7,
+            "scene_004:group_007": 7,
+            "scene_010:group_007": 7,
+            "scene_001:group_005": 7,
+            "scene_003:group_007_obj02": 7,
+            "scene_004:group_008_obj02": 7,
+            "scene_006:group_008_obj02": 7,
+            "scene_009:group_003": 7
+          },
+          "near_group_adjacent_pair_count": 148
+        }
+      },
+      "per_task_scene_coverage": {
+        "SC-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SC-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SC-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SC-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SC-5": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SC-6": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 1,
+          "scene_count_histogram": {
+            "1": 10
+          }
+        },
+        "SP-3a": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-7": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-7": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TE-6": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TM-6": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TRJ-5": {
+          "unique_scenes": 9,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "2": 7,
+            "3": 2
+          }
+        },
+        "TRJ-6": {
+          "unique_scenes": 9,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "2": 7,
+            "3": 2
+          }
+        },
+        "TRJ-7": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 1,
+            "2": 8,
+            "3": 1
+          }
+        },
+        "SU-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TM-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TE-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TM-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 1,
+            "2": 8,
+            "3": 1
+          }
+        },
+        "TE-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TM-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-6": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-5": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TE-5": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TRJ-4": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 1,
+            "2": 8,
+            "3": 1
+          }
+        },
+        "TM-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-5": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SP-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TE-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TE-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TM-5": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "SU-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TRJ-1": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 4,
+            "2": 2,
+            "3": 4
+          }
+        },
+        "TRJ-2": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 4,
+            "2": 2,
+            "3": 4
+          }
+        },
+        "SP-6": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 2,
+          "scene_count_histogram": {
+            "2": 10
+          }
+        },
+        "TRJ-3": {
+          "unique_scenes": 10,
+          "max_questions_in_one_scene": 3,
+          "scene_count_histogram": {
+            "1": 1,
+            "2": 8,
+            "3": 1
+          }
+        }
+      },
+      "frq": {
+        "SC-6": {
+          "question_count": 10,
+          "unique_answer_buckets": 10,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.19804747782287144
+        },
+        "SP-3a": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.0
+        },
+        "SP-7": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.2739924505992682
+        },
+        "SU-7": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.17770137457907817
+        },
+        "TE-6": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.14442920039086535
+        },
+        "TM-6": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.15023662138117008
+        },
+        "TRJ-5": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.0742911920669887
+        },
+        "TRJ-6": {
+          "question_count": 20,
+          "unique_answer_buckets": 20,
+          "max_answer_bucket_count": 1,
+          "mean_model_response_ground_truth_overlap": 0.0726921411921412
+        },
+        "TRJ-7": {
+          "question_count": 20,
+          "unique_answer_buckets": 7,
+          "max_answer_bucket_count": 5,
+          "mean_model_response_ground_truth_overlap": 0.128845165758643
+        }
+      }
+    }
+  },
+  "retention": {
+    "question_fraction": 0.08744977546679272,
+    "scene_fraction": 1.0
+  },
+  "comparison": {
+    "mcq_balance": {
+      "full_set_mean_max_option_fraction": 0.5475452861564318,
+      "miniset_mean_max_option_fraction": 0.2338709677419355,
+      "full_set_mean_imbalance_ratio": 26.553827654688817,
+      "miniset_mean_imbalance_ratio": 1.1666666666666667
+    },
+    "accuracy_and_hardness": {
+      "full_mcq_accuracy": 0.3516988062442608,
+      "miniset_mcq_accuracy": 0.08421052631578947,
+      "full_mcq_hard_fraction": 0.6483011937557392,
+      "miniset_mcq_hard_fraction": 0.9157894736842105,
+      "full_frq_bleurt_mean": -0.583302093667552,
+      "miniset_frq_bleurt_mean": -0.3984879830304314,
+      "full_frq_mean_response_hardness": 0.8381753588803353,
+      "miniset_frq_mean_response_hardness": 0.8680927194259306
+    },
+    "representation": {
+      "question_retention_fraction": 0.08744977546679272,
+      "scene_retention_fraction": 1.0,
+      "selected_scene_count": 10,
+      "full_scene_count": 10
+    }
+  }
+}
