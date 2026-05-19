@@ -1,0 +1,363 @@
+{
+  "meta": {
+    "source_questions_json": "/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/questions.json",
+    "note": "Compatibility file for AutoDriving/nuscenes/generate_answers.py.",
+    "unsupported_families_not_generated_here": [
+      "TRJ",
+      "SC"
+    ],
+    "supported_task_count": 27
+  },
+  "tasks": [
+    {
+      "id": "SP-1",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "What is the trajectory direction of <obj> in relation to the ego vehicle?",
+      "choices": {
+        "A": "Moving toward ego",
+        "B": "Moving away from ego",
+        "C": "Moving left-to-right across ego",
+        "D": "Moving right-to-left across ego",
+        "E": "Static",
+        "F": "Same direction as ego"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-2",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "What is the spatial relationship between <obj> and ego vehicle?",
+      "choices": {
+        "A": "In front",
+        "B": "Front-left",
+        "C": "Front-right",
+        "D": "Directly left",
+        "E": "Directly right",
+        "F": "Rear-left",
+        "G": "Rear-right",
+        "H": "Behind"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-3",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "What is the approximate distance between <obj> and ego vehicle?",
+      "choices": {
+        "A": "0-5m",
+        "B": "5-15m",
+        "C": "15-30m",
+        "D": "30-50m",
+        "E": ">50m"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-3a",
+      "task": "space-perception",
+      "question_format": "FRQ",
+      "question": "What is the approximate distance in meters between <obj> and the ego vehicle?",
+      "choices": null,
+      "source_row_count": 237
+    },
+    {
+      "id": "SP-4",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "Use the ego vehicle's lanes as reference, which lane is <obj> located in?",
+      "choices": {
+        "A": "Same lane as ego",
+        "B": "Left adjacent lane",
+        "C": "Right adjacent lane",
+        "D": "Two lanes left",
+        "E": "Two lanes right"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-5",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "What is the occlusion state of <obj>?",
+      "choices": {
+        "A": "Fully visible",
+        "B": "Partially occluded (<50% occluded)",
+        "C": "Mostly occluded (≥50% occluded)",
+        "D": "Fully occluded but inferred"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-6",
+      "task": "space-perception",
+      "question_format": "MCQ",
+      "question": "Is <obj> on the drivable ground plane?",
+      "choices": {
+        "A": "On road",
+        "B": "On sidewalk",
+        "C": "Above the ground"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SP-7",
+      "task": "space-perception",
+      "question_format": "FRQ",
+      "question": "Describe the spatial relationship between the ego vehicle and <obj>, including its relative position, orientation of motion, and approximate distance.",
+      "choices": null,
+      "source_row_count": 79
+    },
+    {
+      "id": "SU-1",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "What physical constraints affect the ego vehicle given <obj>?",
+      "choices": {
+        "A": "Blocking ego lane",
+        "B": "Partially obstructing ego lane",
+        "C": "No constraint",
+        "D": "Dynamic obstruction in ego lane"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-2",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "Which region around the ego vehicle is safely drivable?",
+      "choices": {
+        "A": "Front only",
+        "B": "Front-left",
+        "C": "Front-right",
+        "D": "Left only",
+        "E": "Right only",
+        "F": "None",
+        "G": "All directions"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-3",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "What is the risk level posed by <obj> to the ego vehicle?",
+      "choices": {
+        "A": "Low risk",
+        "B": "Moderate risk",
+        "C": "High risk",
+        "D": "Critical / imminent collision"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-4",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "Does the ego vehicle have sufficient clearance to change lanes?",
+      "choices": {
+        "A": "Safe to change left",
+        "B": "Safe to change right",
+        "C": "Unsafe both sides",
+        "D": "Safe both sides"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-5",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "Which maneuver is geometrically feasible at this moment?",
+      "choices": {
+        "A": "Maintain lane",
+        "B": "Lane change left",
+        "C": "Lane change right",
+        "D": "Turn left",
+        "E": "Turn right",
+        "F": "Stop only"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-6",
+      "task": "space-understanding",
+      "question_format": "MCQ",
+      "question": "How spatially dense is the environment around ego considering the number of objects and their distance to the ego?",
+      "choices": {
+        "A": "Sparse",
+        "B": "Moderate",
+        "C": "Dense",
+        "D": "Highly congested"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "SU-7",
+      "task": "space-understanding",
+      "question_format": "FRQ",
+      "question": "Describe the overall spatial situation of the ego vehicle in the scene, including existing physical constraints, available drivable space, risk level, and feasible maneuvers.",
+      "choices": null,
+      "source_row_count": 79
+    },
+    {
+      "id": "TE-1",
+      "task": "time-extrapolation",
+      "question_format": "MCQ",
+      "question": "What is the most likely future motion of <obj> over the next few seconds?",
+      "choices": {
+        "A": "Continue straight",
+        "B": "Turn left",
+        "C": "Turn right",
+        "D": "Stop",
+        "E": "Cross ego path"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TE-2",
+      "task": "time-extrapolation",
+      "question_format": "MCQ",
+      "question": "If both vehicles maintain their current motion, when would a collision occur?",
+      "choices": {
+        "A": "No collision predicted",
+        "B": ">10 seconds",
+        "C": "5-10 seconds",
+        "D": "2-5 seconds",
+        "E": "<2 seconds"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TE-3",
+      "task": "time-extrapolation",
+      "question_format": "MCQ",
+      "question": "Which lane will <obj> most likely occupy in the next few seconds?",
+      "choices": {
+        "A": "Remain in current lane",
+        "B": "Move to left lane",
+        "C": "Move to right lane",
+        "D": "Enter ego lane",
+        "E": "Exit roadway"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TE-4",
+      "task": "time-extrapolation",
+      "question_format": "MCQ",
+      "question": "What should be the ego vehicle's primary response to <obj>?",
+      "choices": {
+        "A": "Maintain speed",
+        "B": "Slow down",
+        "C": "Prepare to stop",
+        "D": "Change lane",
+        "E": "Yield",
+        "F": "Emergency braking"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TE-5",
+      "task": "time-extrapolation",
+      "question_format": "MCQ",
+      "question": "What traffic event is most likely to occur next?",
+      "choices": {
+        "A": "Lane change",
+        "B": "Vehicle stopping",
+        "C": "Pedestrian crossing",
+        "D": "Vehicle merging",
+        "E": "No significant event"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TE-6",
+      "task": "time-extrapolation",
+      "question_format": "FRQ",
+      "question": "Describe how the current scene is likely to evolve over the next few seconds and what actions the ego vehicle should take to maintain safety.",
+      "choices": null,
+      "source_row_count": 79
+    },
+    {
+      "id": "TM-1",
+      "task": "time-memory",
+      "question_format": "MCQ",
+      "question": "Which objects previously appeared in the scene but are no longer visible in current frame?",
+      "choices": {
+        "A": "No object disappeared",
+        "B": "Pedestrian",
+        "C": "Vehicle",
+        "D": "Bicycle",
+        "E": "Static obstacle",
+        "F": "Multiple objects"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TM-2",
+      "task": "time-memory",
+      "question_format": "MCQ",
+      "question": "Where was <obj> located relative to the ego vehicle in the previous frame(s)?",
+      "choices": {
+        "A": "In front",
+        "B": "Front-left",
+        "C": "Front-right",
+        "D": "Left",
+        "E": "Right",
+        "F": "Behind"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TM-3",
+      "task": "time-memory",
+      "question_format": "MCQ",
+      "question": "What was the recent motion pattern of <obj>?",
+      "choices": {
+        "A": "Moving straight",
+        "B": "Slowing down",
+        "C": "Accelerating",
+        "D": "Turning left",
+        "E": "Turning right",
+        "F": "Stopped previously"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TM-4",
+      "task": "time-memory",
+      "question_format": "MCQ",
+      "question": "How many objects are currently occluded but were previously visible in the previous frame?",
+      "choices": {
+        "A": "None",
+        "B": "1",
+        "C": "2-3",
+        "D": "More than 3"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TM-5",
+      "task": "time-memory",
+      "question_format": "MCQ",
+      "question": "In which lane was <obj> located earlier in the sequence?",
+      "choices": {
+        "A": "Same lane",
+        "B": "Left adjacent lane",
+        "C": "Right adjacent lane",
+        "D": "Outside roadway"
+      },
+      "source_row_count": 316
+    },
+    {
+      "id": "TM-6",
+      "task": "time-memory",
+      "question_format": "FRQ",
+      "question": "Describe the recent history of the scene, including objects that appeared or disappeared, changes in their motion, and any interactions with the ego vehicle.",
+      "choices": null,
+      "source_row_count": 79
+    }
+  ]
+}

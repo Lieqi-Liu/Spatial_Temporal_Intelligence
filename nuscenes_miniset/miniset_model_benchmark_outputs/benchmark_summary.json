@@ -1,0 +1,378 @@
+{
+  "created_at": "2026-05-18T10:20:43",
+  "input_json": "/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/questions_with_answers_full_nuscenes_miniset_150_per_id.json",
+  "output_dir": "/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/miniset_model_benchmark_outputs",
+  "model_specs": [
+    {
+      "name": "qwen3_vl_8b",
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "backend": "vllm",
+      "enabled": true
+    },
+    {
+      "name": "qwen3_5_35b_a3b",
+      "model_id": "Qwen/Qwen3.5-35B-A3B",
+      "backend": "vllm",
+      "enabled": true
+    }
+  ],
+  "results": [
+    {
+      "name": "qwen3_vl_8b",
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "backend": "vllm",
+      "status": "completed",
+      "started_at": "2026-05-18T08:49:58",
+      "finished_at": "2026-05-18T10:20:37",
+      "output_json": "/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/miniset_model_benchmark_outputs/qwen3_vl_8b_responses.json",
+      "summary": {
+        "total": 5850,
+        "by_question_format": {
+          "FRQ": 1200,
+          "MCQ": 4650
+        },
+        "answered": 5850,
+        "error_responses": 0,
+        "mcq": {
+          "total": 4650,
+          "scored": 4650,
+          "correct": 1077,
+          "accuracy": 0.23161290322580644,
+          "random_guess_baseline": 0.21616743471581756,
+          "accuracy_minus_random_guess": 0.015445468509988874
+        },
+        "frq": {
+          "total": 1200,
+          "responses": 1200,
+          "bleurt_count": 0,
+          "note": "Run FRQ BLEURT scoring separately after benchmark responses are written."
+        },
+        "per_question_id": {
+          "SC-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 1,
+            "accuracy": 0.006666666666666667
+          },
+          "SC-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 120,
+            "accuracy": 0.8
+          },
+          "SC-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 14,
+            "accuracy": 0.09333333333333334
+          },
+          "SC-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 11,
+            "accuracy": 0.07333333333333333
+          },
+          "SC-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 52,
+            "accuracy": 0.3466666666666667
+          },
+          "SC-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "SP-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 36,
+            "accuracy": 0.24
+          },
+          "SP-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 38,
+            "accuracy": 0.25333333333333335
+          },
+          "SP-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 24,
+            "accuracy": 0.16
+          },
+          "SP-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 8,
+            "accuracy": 0.05333333333333334
+          },
+          "SP-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 47,
+            "accuracy": 0.31333333333333335
+          },
+          "SP-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 54,
+            "accuracy": 0.36
+          },
+          "SP-7": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "SU-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 78,
+            "accuracy": 0.52
+          },
+          "SU-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 3,
+            "accuracy": 0.02
+          },
+          "SU-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 40,
+            "accuracy": 0.26666666666666666
+          },
+          "SU-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 12,
+            "accuracy": 0.08
+          },
+          "SU-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 27,
+            "accuracy": 0.18
+          },
+          "SU-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 28,
+            "accuracy": 0.18666666666666668
+          },
+          "SU-7": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "TE-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 12,
+            "accuracy": 0.08
+          },
+          "TE-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 12,
+            "accuracy": 0.08
+          },
+          "TE-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 83,
+            "accuracy": 0.5533333333333333
+          },
+          "TE-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 11,
+            "accuracy": 0.07333333333333333
+          },
+          "TE-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 37,
+            "accuracy": 0.24666666666666667
+          },
+          "TE-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "TM-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 6,
+            "accuracy": 0.04
+          },
+          "TM-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 35,
+            "accuracy": 0.23333333333333334
+          },
+          "TM-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 21,
+            "accuracy": 0.14
+          },
+          "TM-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 1,
+            "accuracy": 0.006666666666666667
+          },
+          "TM-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 74,
+            "accuracy": 0.49333333333333335
+          },
+          "TM-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "TRJ-1": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 90,
+            "accuracy": 0.6
+          },
+          "TRJ-2": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 31,
+            "accuracy": 0.20666666666666667
+          },
+          "TRJ-3": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 55,
+            "accuracy": 0.36666666666666664
+          },
+          "TRJ-4": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 150,
+            "correct": 16,
+            "accuracy": 0.10666666666666667
+          },
+          "TRJ-5": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "TRJ-6": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          },
+          "TRJ-7": {
+            "total": 150,
+            "answered": 150,
+            "error_responses": 0,
+            "scored_accuracy_rows": 0,
+            "correct": 0,
+            "accuracy": null
+          }
+        }
+      }
+    },
+    {
+      "name": "qwen3_5_35b_a3b",
+      "model_id": "Qwen/Qwen3.5-35B-A3B",
+      "backend": "vllm",
+      "status": "skipped_load_failed",
+      "started_at": "2026-05-18T10:20:43",
+      "finished_at": "2026-05-18T10:20:43",
+      "load_error": "ValueError: The checkpoint you are trying to load has model type `qwen3_5_moe` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.\n\nYou can update Transformers with the command `pip install --upgrade transformers`. If this does not work, and the checkpoint is very new, then there may not be a release version that supports this model yet. In this case, you can get the most up-to-date code by installing Transformers from source with the command `pip install git+https://github.com/huggingface/transformers.git`",
+      "load_traceback": "Traceback (most recent call last):\n  File \"/local1/lieqiliu/miniconda3/envs/AutoDriving/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py\", line 1360, in from_pretrained\n    config_class = CONFIG_MAPPING[config_dict[\"model_type\"]]\n                   ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/local1/lieqiliu/miniconda3/envs/AutoDriving/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py\", line 1048, in __getitem__\n    raise KeyError(key)\nKeyError: 'qwen3_5_moe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/run_miniset_model_benchmark.py\", line 382, in run_model_spec\n    loaded = load_model(model_spec, args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/run_miniset_model_benchmark.py\", line 235, in load_model\n    return load_vllm_model(str(model_spec[\"model_id\"]), args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/lieqiliu/AutoDriving/Spatial_Temporal_Intelligence/full_nuscenes/run_miniset_model_benchmark.py\", line 197, in load_vllm_model\n    processor = AutoProcessor.from_pretrained(\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/local1/lieqiliu/miniconda3/envs/AutoDriving/lib/python3.11/site-packages/transformers/models/auto/processing_auto.py\", line 363, in from_pretrained\n    config = AutoConfig.from_pretrained(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/local1/lieqiliu/miniconda3/envs/AutoDriving/lib/python3.11/site-packages/transformers/models/auto/configuration_auto.py\", line 1362, in from_pretrained\n    raise ValueError(\nValueError: The checkpoint you are trying to load has model type `qwen3_5_moe` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date.\n\nYou can update Transformers with the command `pip install --upgrade transformers`. If this does not work, and the checkpoint is very new, then there may not be a release version that supports this model yet. In this case, you can get the most up-to-date code by installing Transformers from source with the command `pip install git+https://github.com/huggingface/transformers.git`\n",
+      "output_json": null
+    }
+  ]
+}

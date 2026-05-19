@@ -5,64 +5,44 @@ import argparse
 import csv
 import json
 import os
+import statistics
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
-from statistics import mean
 from typing import Any
 
-DEFAULT_INPUT = Path(__file__).resolve().parent / "questions_with_answers_fake_full_combined_qwen3vl8b.json"
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "frq_bleurt_scores_qwen3vl8b"
+try:
+    from tqdm import tqdm
+except Exception:
+    tqdm = None
+
+
+DEFAULT_INPUT = Path("/local1/lieqiliu/nuscenes/fullset/questions_with_answers_all_qwen3vl30b.json")
+DEFAULT_OUTPUT_DIR = Path("/local1/lieqiliu/nuscenes/fullset/frq_bleurt_scores_qwen3vl30b")
 DEFAULT_BLEURT_MODEL = "Elron/bleurt-base-512"
 DEFAULT_HF_HOME = Path("/local1/lieqiliu/huggingface")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Score fake-full FRQ model responses against ground truth with BLEURT."
+        description="Score full NuScenes FRQ Qwen responses against ground truth with BLEURT."
     )
-    parser.add_argument("--input", type=Path, default=DEFAULT_INPUT, help="Annotated task JSON.")
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help="Output folder.")
-    parser.add_argument(
-        "--bleurt-model",
-        default=DEFAULT_BLEURT_MODEL,
-        help=f"HF sequence-classification BLEURT checkpoint (default: {DEFAULT_BLEURT_MODEL}).",
-    )
-    parser.add_argument(
-        "--hf-home",
-        type=Path,
-        default=DEFAULT_HF_HOME,
-        help=f"Preferred Hugging Face cache root (default: {DEFAULT_HF_HOME}).",
-    )
+    parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--bleurt-model", default=DEFAULT_BLEURT_MODEL)
+    parser.add_argument("--hf-home", type=Path, default=DEFAULT_HF_HOME)
     parser.add_argument(
         "--local-files-only",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Use only locally cached HF model files; disable to allow downloads.",
+        help="Use only locally cached HF model files. Use --no-local-files-only to download.",
     )
-    parser.add_argument("--batch-size", type=int, default=16, help="BLEURT inference batch size.")
-    parser.add_argument(
-        "--device",
-        choices=("auto", "cpu", "cuda"),
-        default="auto",
-        help="Device for BLEURT scoring. 'auto' prefers CUDA when available.",
-    )
-    parser.add_argument(
-        "--task-id",
-        action="append",
-        default=[],
-        help="Optional FRQ task id filter, e.g. --task-id SP-7. Can be repeated.",
-    )
-    parser.add_argument(
-        "--include-errors",
-        action="store_true",
-        help="Score rows whose model_response starts with [ERROR]. Default skips them.",
-    )
-    parser.add_argument(
-        "--write-back",
-        action="store_true",
-        help="Write BLEURT scores back into the input JSON task rows.",
-    )
+    parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
+    parser.add_argument("--task-id", action="append", default=[], help="Optional FRQ id filter.")
+    parser.add_argument("--max-rows", type=int, default=0, help="If >0, score only first N rows.")
+    parser.add_argument("--include-errors", action="store_true")
+    parser.add_argument("--write-back", action="store_true")
     parser.add_argument(
         "--write-back-output",
         type=Path,
@@ -96,7 +76,7 @@ def resolve_hf_home(model: str, requested_hf_home: Path, local_files_only: bool)
             f"Local model cache not found for {model}. Checked:\n"
             f"  - {requested_model_dir}\n"
             f"  - {default_model_dir}\n"
-            "Disable --local-files-only if you want to download it."
+            "Run again with --no-local-files-only if you want to download it."
         )
     return requested_hf_home
 
@@ -126,18 +106,15 @@ def resolve_device(device: str) -> str:
         return "cpu"
 
 
-def is_frq(task: dict[str, Any]) -> bool:
-    if str(task.get("question_format", "")).upper() == "FRQ":
-        return True
-    choices = task.get("choices")
-    return choices == {} and str(task.get("id", "")).endswith(("-6", "-7"))
+def is_frq(row: dict[str, Any]) -> bool:
+    return str(row.get("question_format", "")).upper() == "FRQ"
 
 
 def collect_rows(
-    tasks: list[dict[str, Any]], task_ids: set[str], include_errors: bool
+    tasks: list[dict[str, Any]], task_ids: set[str], include_errors: bool, max_rows: int
 ) -> tuple[list[dict[str, Any]], Counter[str]]:
-    counters: Counter[str] = Counter()
     rows: list[dict[str, Any]] = []
+    counters: Counter[str] = Counter()
     for index, task in enumerate(tasks):
         if not is_frq(task):
             counters["non_frq"] += 1
@@ -160,6 +137,9 @@ def collect_rows(
         row["_task_index"] = index
         rows.append(row)
         counters["scored_candidates"] += 1
+        if max_rows > 0 and len(rows) >= max_rows:
+            counters["max_rows_stop"] += 1
+            break
     return rows, counters
 
 
@@ -189,7 +169,10 @@ def bleurt_scores_batch(
     model.eval()
 
     scores: list[float] = []
-    for start in range(0, len(hypotheses), batch_size):
+    iterator = range(0, len(hypotheses), batch_size)
+    if tqdm is not None:
+        iterator = tqdm(iterator, total=(len(hypotheses) + batch_size - 1) // batch_size, desc="BLEURT")
+    for start in iterator:
         batch_h = hypotheses[start : start + batch_size]
         batch_r = references[start : start + batch_size]
         encoded = tokenizer(
@@ -200,45 +183,45 @@ def bleurt_scores_batch(
             max_length=512,
             return_tensors="pt",
         )
-        encoded = {k: v.to(device) for k, v in encoded.items()}
+        encoded = {key: value.to(device) for key, value in encoded.items()}
         with torch.no_grad():
             logits = model(**encoded).logits.squeeze(-1)
         if logits.ndim == 0:
             scores.append(float(logits.detach().cpu().item()))
         else:
-            scores.extend(float(v) for v in logits.detach().cpu().tolist())
-        print(f"[{min(start + batch_size, len(hypotheses))}/{len(hypotheses)}] scored")
+            scores.extend(float(value) for value in logits.detach().cpu().tolist())
+        if tqdm is None:
+            print(f"[{min(start + batch_size, len(hypotheses))}/{len(hypotheses)}] scored")
     return scores
 
 
-def summarize(scored_rows: list[dict[str, Any]], skip_counters: Counter[str]) -> dict[str, Any]:
-    scores = [float(row["bleurt_model_gt"]) for row in scored_rows]
+def bucket(values: list[float]) -> dict[str, Any]:
+    if not values:
+        return {"count": 0, "mean": None, "min": None, "max": None}
+    ordered = sorted(values)
+    return {
+        "count": len(values),
+        "mean": statistics.mean(values),
+        "min": ordered[0],
+        "max": ordered[-1],
+    }
+
+
+def summarize(scored_rows: list[dict[str, Any]], skip_counts: Counter[str]) -> dict[str, Any]:
+    by_task_id: dict[str, list[float]] = defaultdict(list)
     by_task: dict[str, list[float]] = defaultdict(list)
-    by_source: dict[str, list[float]] = defaultdict(list)
     for row in scored_rows:
-        by_task[str(row.get("id", ""))].append(float(row["bleurt_model_gt"]))
-        by_source[str(row.get("source_dataset", ""))].append(float(row["bleurt_model_gt"]))
-
-    def bucket_summary(values: list[float]) -> dict[str, Any]:
-        if not values:
-            return {"count": 0, "mean": None, "min": None, "max": None}
-        ordered = sorted(values)
-        return {
-            "count": len(values),
-            "mean": mean(values),
-            "min": ordered[0],
-            "max": ordered[-1],
-        }
-
+        score = float(row["bleurt_model_gt"])
+        by_task_id[str(row.get("id", ""))].append(score)
+        by_task[str(row.get("task", ""))].append(score)
+    all_scores = [float(row["bleurt_model_gt"]) for row in scored_rows]
     return {
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "scored_count": len(scored_rows),
-        "skip_counts": dict(skip_counters),
-        "overall": bucket_summary(scores),
-        "by_task_id": {key: bucket_summary(values) for key, values in sorted(by_task.items())},
-        "by_source_dataset": {
-            key: bucket_summary(values) for key, values in sorted(by_source.items())
-        },
+        "skip_counts": dict(skip_counts),
+        "overall": bucket(all_scores),
+        "by_question_id": {key: bucket(values) for key, values in sorted(by_task_id.items())},
+        "by_task": {key: bucket(values) for key, values in sorted(by_task.items())},
     }
 
 
@@ -248,7 +231,6 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "task_index",
         "id",
         "task",
-        "source_dataset",
         "scene_id",
         "group_id",
         "object_id",
@@ -266,7 +248,6 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
                     "task_index": row.get("_task_index"),
                     "id": row.get("id"),
                     "task": row.get("task"),
-                    "source_dataset": row.get("source_dataset"),
                     "scene_id": row.get("scene_id"),
                     "group_id": row.get("group_id"),
                     "object_id": row.get("object_id"),
@@ -295,12 +276,9 @@ def main() -> None:
     if not isinstance(tasks, list):
         raise ValueError("Input JSON must contain a top-level tasks list.")
 
-    rows, skip_counters = collect_rows(tasks, set(args.task_id), args.include_errors)
+    rows, skip_counts = collect_rows(tasks, set(args.task_id), args.include_errors, args.max_rows)
     if not rows:
-        raise SystemExit(
-            "No FRQ rows are ready to score. Wait for model_response generation to finish "
-            "or rerun with --include-errors if you intentionally want to score error rows."
-        )
+        raise SystemExit("No FRQ rows are ready for BLEURT scoring.")
 
     device = resolve_device(args.device)
     hypotheses = [str(row.get("model_response", "")).strip() for row in rows]
@@ -318,7 +296,7 @@ def main() -> None:
         row["bleurt_model_gt"] = score
         row["bleurt_model"] = args.bleurt_model
 
-    summary = summarize(rows, skip_counters)
+    summary = summarize(rows, skip_counts)
     summary["input"] = str(args.input.resolve())
     summary["bleurt_model"] = args.bleurt_model
     summary["hf_home"] = str(args.hf_home.resolve())
@@ -337,8 +315,7 @@ def main() -> None:
             task["bleurt_scored_at"] = summary["created_at"]
         payload.setdefault("meta", {})
         payload["meta"]["frq_bleurt_summary"] = summary
-        output_path = args.write_back_output or args.input
-        write_json(output_path, payload)
+        write_json(args.write_back_output or args.input, payload)
 
     print(f"Scored FRQ rows: {summary['scored_count']}")
     print(f"Mean BLEURT model-vs-GT: {summary['overall']['mean']}")
