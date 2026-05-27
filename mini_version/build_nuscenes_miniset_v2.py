@@ -115,6 +115,28 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
 
+def normalize_generated_answers(payload: dict[str, Any]) -> dict[str, Any]:
+    generated = payload.get("generated_answers", {})
+    if generated:
+        return generated
+
+    flat_tasks = payload.get("tasks", [])
+    if not isinstance(flat_tasks, list) or not flat_tasks:
+        return {}
+
+    regrouped: dict[str, dict[str, Any]] = defaultdict(lambda: {"count": 0, "tasks": []})
+    for row in flat_tasks:
+        task_id = str(row.get("id", ""))
+        if not task_id:
+            continue
+        regrouped[task_id]["tasks"].append(dict(row))
+
+    for task_id, bucket in regrouped.items():
+        bucket["count"] = len(bucket["tasks"])
+
+    return dict(regrouped)
+
+
 def is_mcq(row: dict[str, Any]) -> bool:
     return row.get("question_format") == "MCQ" and isinstance(row.get("choices"), dict) and bool(row.get("choices"))
 
@@ -375,8 +397,9 @@ def build_summary(
 ) -> dict[str, Any]:
     full_rows: list[dict[str, Any]] = []
     selected_rows: list[dict[str, Any]] = []
+    input_generated_answers = normalize_generated_answers(input_payload)
 
-    for bucket in input_payload.get("generated_answers", {}).values():
+    for bucket in input_generated_answers.values():
         full_rows.extend(bucket.get("tasks", []))
     for bucket in selected_generated_answers.values():
         selected_rows.extend(bucket.get("tasks", []))
@@ -384,7 +407,7 @@ def build_summary(
     full_scenes = Counter(str(r.get("scene_id", "")) for r in full_rows if r.get("scene_id"))
     selected_scenes = Counter(str(r.get("scene_id", "")) for r in selected_rows if r.get("scene_id"))
 
-    full_per_task = {task_id: len(bucket.get("tasks", [])) for task_id, bucket in input_payload.get("generated_answers", {}).items()}
+    full_per_task = {task_id: len(bucket.get("tasks", [])) for task_id, bucket in input_generated_answers.items()}
     selected_per_task = {task_id: len(bucket.get("tasks", [])) for task_id, bucket in selected_generated_answers.items()}
 
     mcq_before = compute_mcq_balance(selected_rows)
@@ -435,9 +458,9 @@ def main() -> None:
     rng = random.Random(args.seed)
 
     payload = read_json(args.input_json)
-    generated = payload.get("generated_answers", {})
+    generated = normalize_generated_answers(payload)
     if not generated:
-        raise RuntimeError("Input JSON does not contain generated_answers")
+        raise RuntimeError("Input JSON does not contain generated_answers or flat tasks")
 
     vlm_accuracy, vlm_info = extract_vlm_task_accuracy(args.vlm_metrics_json)
 
