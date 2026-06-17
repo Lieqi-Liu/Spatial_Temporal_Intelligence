@@ -1,0 +1,5 @@
+model,mcq_accuracy,mcq_random_guess_baseline,mcq_accuracy_minus_baseline,frq_bleurt_mean,frq_bleurt_count
+LLaVA 1.5 13B,0.276344,0.216167,0.060177,-0.428326,1116
+Qwen3-VL 8B,0.31957,0.216167,0.103402,-0.219893,1200
+Qwen3-VL 30B-A3B,0.307742,0.216167,0.091575,-0.235416,1200
+Qwen3-VL 32B,0.366237,0.216167,0.150069,-0.288175,1200

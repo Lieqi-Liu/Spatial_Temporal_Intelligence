@@ -1,0 +1,13 @@
+nuscenes_test/formatted_scenes/
+nuscenes_test/__pycache__/
+__pycache__/
+nuscenes_test/questions_with_answers_all.json
+nuscenes_test/generated_answers_all.json
+nuscenes_test/vlm_responses_*.json
+nuscenes_test/questions_with_answers_miniset.json
+data/
+waymo_test/waymo-open-dataset
+waymo_test/.hf_token
+vlm_responses_*.json
+mini_version/questions_with_answers_miniset_v2.json
+nuscenes_mini/miniset_example/frames/
