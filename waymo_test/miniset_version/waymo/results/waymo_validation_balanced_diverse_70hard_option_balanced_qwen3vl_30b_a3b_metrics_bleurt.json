@@ -1,0 +1,616 @@
+{
+  "metadata": {
+    "created_at": "2026-06-23T15:26:46.501795",
+    "benchmark_json": "waymo_validation_balanced_diverse_70hard_option_balanced_miniset_from_full_results.json",
+    "responses_json": "result/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_30b_a3b_responses.json",
+    "assume_order": false,
+    "requested_score_source": "benchmark",
+    "score_source": "benchmark",
+    "matched_question_ids": 2400,
+    "benchmark_question_id_count": 2400
+  },
+  "overall": {
+    "mcq_count": 1800,
+    "correct": 612,
+    "accuracy": 0.34,
+    "invalid_count": 0,
+    "invalid_rate": 0.0,
+    "missing_response_count": 0,
+    "random_guess_baseline": 0.20324074074073942
+  },
+  "per_question_type": {
+    "SC-1": {
+      "count": 100,
+      "correct": 44,
+      "accuracy": 0.44,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.25,
+      "ground_truth_distribution": {
+        "A": 25,
+        "B": 25,
+        "C": 25,
+        "D": 25
+      },
+      "prediction_distribution": {
+        "A": 23,
+        "B": 31,
+        "C": 23,
+        "D": 23
+      }
+    },
+    "SC-2": {
+      "count": 100,
+      "correct": 28,
+      "accuracy": 0.28,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 12,
+        "B": 27,
+        "C": 14,
+        "D": 2,
+        "E": 45
+      }
+    },
+    "SC-3": {
+      "count": 100,
+      "correct": 30,
+      "accuracy": 0.3,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 52,
+        "B": 17,
+        "C": 7,
+        "D": 15,
+        "E": 9
+      }
+    },
+    "SP-2": {
+      "count": 100,
+      "correct": 22,
+      "accuracy": 0.22,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.125,
+      "ground_truth_distribution": {
+        "A": 13,
+        "B": 13,
+        "C": 13,
+        "D": 13,
+        "E": 12,
+        "F": 12,
+        "G": 12,
+        "H": 12
+      },
+      "prediction_distribution": {
+        "A": 11,
+        "B": 36,
+        "C": 40,
+        "D": 4,
+        "E": 3,
+        "F": 3,
+        "G": 2,
+        "H": 1
+      }
+    },
+    "SP-3": {
+      "count": 100,
+      "correct": 31,
+      "accuracy": 0.31,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 6,
+        "B": 36,
+        "C": 36,
+        "D": 12,
+        "E": 10
+      }
+    },
+    "TE-1": {
+      "count": 100,
+      "correct": 30,
+      "accuracy": 0.3,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 52,
+        "B": 16,
+        "C": 13,
+        "D": 13,
+        "E": 6
+      }
+    },
+    "TE-2": {
+      "count": 100,
+      "correct": 26,
+      "accuracy": 0.26,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 61,
+        "B": 4,
+        "C": 7,
+        "D": 7,
+        "E": 21
+      }
+    },
+    "TE-4": {
+      "count": 100,
+      "correct": 36,
+      "accuracy": 0.36,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 7,
+        "B": 49,
+        "C": 18,
+        "D": 9,
+        "E": 8,
+        "F": 9
+      }
+    },
+    "TE-5": {
+      "count": 100,
+      "correct": 26,
+      "accuracy": 0.26,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19999999999999962,
+      "ground_truth_distribution": {
+        "A": 20,
+        "B": 20,
+        "C": 20,
+        "D": 20,
+        "E": 20
+      },
+      "prediction_distribution": {
+        "A": 20,
+        "B": 19,
+        "C": 13,
+        "D": 13,
+        "E": 35
+      }
+    },
+    "TM-2": {
+      "count": 100,
+      "correct": 21,
+      "accuracy": 0.21,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 33,
+        "B": 34,
+        "C": 26,
+        "D": 3,
+        "E": 1,
+        "F": 3
+      }
+    },
+    "TM-3": {
+      "count": 100,
+      "correct": 32,
+      "accuracy": 0.32,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 34,
+        "B": 11,
+        "C": 12,
+        "D": 10,
+        "E": 7,
+        "F": 26
+      }
+    },
+    "TM-5": {
+      "count": 100,
+      "correct": 36,
+      "accuracy": 0.36,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.25,
+      "ground_truth_distribution": {
+        "A": 25,
+        "B": 25,
+        "C": 25,
+        "D": 25
+      },
+      "prediction_distribution": {
+        "A": 25,
+        "B": 59,
+        "C": 12,
+        "D": 4
+      }
+    },
+    "TRJ-1": {
+      "count": 100,
+      "correct": 46,
+      "accuracy": 0.46,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 27,
+        "B": 19,
+        "C": 22,
+        "D": 11,
+        "E": 13,
+        "F": 8
+      }
+    },
+    "TRJ-10": {
+      "count": 100,
+      "correct": 35,
+      "accuracy": 0.35,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.25,
+      "ground_truth_distribution": {
+        "A": 25,
+        "B": 25,
+        "C": 25,
+        "D": 25
+      },
+      "prediction_distribution": {
+        "A": 20,
+        "B": 29,
+        "C": 23,
+        "D": 28
+      }
+    },
+    "TRJ-2": {
+      "count": 100,
+      "correct": 50,
+      "accuracy": 0.5,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 32,
+        "B": 11,
+        "C": 10,
+        "D": 11,
+        "E": 23,
+        "F": 13
+      }
+    },
+    "TRJ-3": {
+      "count": 100,
+      "correct": 54,
+      "accuracy": 0.54,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16666666666666646,
+      "ground_truth_distribution": {
+        "A": 17,
+        "B": 17,
+        "C": 17,
+        "D": 17,
+        "E": 16,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 10,
+        "B": 36,
+        "C": 21,
+        "D": 7,
+        "E": 8,
+        "F": 18
+      }
+    },
+    "TRJ-4": {
+      "count": 100,
+      "correct": 36,
+      "accuracy": 0.36,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.25,
+      "ground_truth_distribution": {
+        "A": 25,
+        "B": 25,
+        "C": 25,
+        "D": 25
+      },
+      "prediction_distribution": {
+        "A": 13,
+        "B": 45,
+        "C": 26,
+        "D": 16
+      }
+    },
+    "TRJ-8": {
+      "count": 100,
+      "correct": 29,
+      "accuracy": 0.29,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.3333333333333329,
+      "ground_truth_distribution": {
+        "A": 34,
+        "B": 33,
+        "C": 33
+      },
+      "prediction_distribution": {
+        "A": 35,
+        "B": 63,
+        "C": 2
+      }
+    }
+  },
+  "per_task": {
+    "scenario-corner-case": {
+      "count": 300,
+      "correct": 102,
+      "accuracy": 0.34,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.21666666666666815,
+      "ground_truth_distribution": {
+        "A": 65,
+        "B": 65,
+        "C": 65,
+        "D": 65,
+        "E": 40
+      },
+      "prediction_distribution": {
+        "A": 87,
+        "B": 75,
+        "C": 44,
+        "D": 40,
+        "E": 54
+      }
+    },
+    "space-perception": {
+      "count": 200,
+      "correct": 53,
+      "accuracy": 0.265,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.16249999999999967,
+      "ground_truth_distribution": {
+        "A": 33,
+        "B": 33,
+        "C": 33,
+        "D": 33,
+        "E": 32,
+        "F": 12,
+        "G": 12,
+        "H": 12
+      },
+      "prediction_distribution": {
+        "A": 17,
+        "B": 72,
+        "C": 76,
+        "D": 16,
+        "E": 13,
+        "F": 3,
+        "G": 2,
+        "H": 1
+      }
+    },
+    "time-extrapolation": {
+      "count": 400,
+      "correct": 118,
+      "accuracy": 0.295,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19166666666666685,
+      "ground_truth_distribution": {
+        "A": 77,
+        "B": 77,
+        "C": 77,
+        "D": 77,
+        "E": 76,
+        "F": 16
+      },
+      "prediction_distribution": {
+        "A": 140,
+        "B": 88,
+        "C": 51,
+        "D": 42,
+        "E": 70,
+        "F": 9
+      }
+    },
+    "time-memory": {
+      "count": 300,
+      "correct": 89,
+      "accuracy": 0.2966666666666667,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.19444444444444467,
+      "ground_truth_distribution": {
+        "A": 59,
+        "B": 59,
+        "C": 59,
+        "D": 59,
+        "E": 32,
+        "F": 32
+      },
+      "prediction_distribution": {
+        "A": 92,
+        "B": 104,
+        "C": 50,
+        "D": 17,
+        "E": 8,
+        "F": 29
+      }
+    },
+    "trajectory-prediction": {
+      "count": 600,
+      "correct": 250,
+      "accuracy": 0.4166666666666667,
+      "invalid_count": 0,
+      "invalid_rate": 0.0,
+      "random_guess_baseline": 0.22222222222222177,
+      "ground_truth_distribution": {
+        "A": 135,
+        "B": 134,
+        "C": 134,
+        "D": 101,
+        "E": 48,
+        "F": 48
+      },
+      "prediction_distribution": {
+        "A": 137,
+        "B": 203,
+        "C": 104,
+        "D": 73,
+        "E": 44,
+        "F": 39
+      }
+    }
+  },
+  "special_metrics": {
+    "SP-3a": {
+      "count": 100,
+      "parse_count": 98,
+      "parse_rate": 0.98,
+      "mae_m": 21.967346938775506,
+      "rmse_m": 31.432197842729508,
+      "median_abs_error_m": 12.8,
+      "within_0_5m_rate": 0.11224489795918367,
+      "within_1_0m_rate": 0.12244897959183673,
+      "within_2_0m_rate": 0.12244897959183673
+    },
+    "TRJ-5": {
+      "count": 100,
+      "parse_count": 100,
+      "parse_rate": 1.0,
+      "exact_length_match_rate": 1.0,
+      "mean_ade_m": 35.56140312241127,
+      "mean_fde_m": 46.133904230259986,
+      "min_ade_m": 0.3404006171247037,
+      "min_fde_m": 0.35,
+      "median_ade_m": 12.170766036610635,
+      "median_fde_m": 21.59580074921974
+    },
+    "TRJ-6": {
+      "count": 100,
+      "parse_count": 97,
+      "parse_rate": 0.97,
+      "exact_length_match_rate": 1.0,
+      "mean_ade_m": 18.48528186742565,
+      "mean_fde_m": 27.452338175593056,
+      "min_ade_m": 0.8982550104575938,
+      "min_fde_m": 0.9130049287928298,
+      "median_ade_m": 12.473257628033842,
+      "median_fde_m": 19.61378928203319
+    },
+    "TRJ-7": {
+      "count": 100,
+      "nonempty_count": 100,
+      "nonempty_rate": 1.0,
+      "empty_count": 0,
+      "error_count": 0
+    },
+    "text_frq_note": "Text FRQ metrics are intentionally skipped for now."
+  },
+  "bleurt": {
+    "used": true,
+    "model": "Elron/bleurt-base-512",
+    "cache_root": "/local1/rgao727/huggingface/hub",
+    "device": "cuda",
+    "count": 200,
+    "overall_mean": -0.3173294535279274,
+    "by_question_type": {
+      "SC-4": {
+        "count": 100,
+        "mean": -0.37159802302718165,
+        "min": -0.9243787527084351,
+        "max": 0.0008784234523773193
+      },
+      "TRJ-9": {
+        "count": 100,
+        "mean": -0.26306088402867317,
+        "min": -0.732943594455719,
+        "max": 0.07405208796262741
+      }
+    }
+  }
+}

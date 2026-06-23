@@ -1,0 +1,211 @@
+{
+  "name": "waymo_validation_balanced_diverse_70hard_option_balanced_miniset_release",
+  "total_files": 34,
+  "total_bytes": 24109361,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4006,
+      "sha256": "ed4271a69fb31f3310f067b71d0b6a83a234800342302657911ecf641f27aeec",
+      "category": "root"
+    },
+    {
+      "path": "annotations/sc_scene_summary_review_records.json",
+      "bytes": 331484,
+      "sha256": "f25f63c3a9f5d3940232c4dd850e978fa1df2f2992af6424f7226b31a1b183c4",
+      "category": "annotations"
+    },
+    {
+      "path": "annotations/waymo_sc_trj_review_records.json",
+      "bytes": 781974,
+      "sha256": "1eb0fd307d86718e75772bf1181e2379c5dd61ccd4e0c370b7a4cc846acc700f",
+      "category": "annotations"
+    },
+    {
+      "path": "dataset/waymo_validation_balanced_diverse_70hard_option_balanced_miniset_from_full_results.json",
+      "bytes": 13360644,
+      "sha256": "2415d156d7ab75fa4a48985f0cb447261dac405f25c86ce4b72a29324de3f10b",
+      "category": "dataset"
+    },
+    {
+      "path": "dataset/waymo_validation_balanced_diverse_70hard_option_balanced_miniset_from_full_results_summary.json",
+      "bytes": 5379,
+      "sha256": "117b83117439d95e32c31edbd8d00b8ac72629193a1a1c76d01c16b7cc261ba2",
+      "category": "dataset"
+    },
+    {
+      "path": "docs/reproduction_workflow.md",
+      "bytes": 6274,
+      "sha256": "8ea7f3e11744b7558fa0025c0f03c04900ff53a92d01dfe47fd4add9f35a18f2",
+      "category": "docs"
+    },
+    {
+      "path": "docs/waymo_miniset_dataset_card.md",
+      "bytes": 3919,
+      "sha256": "76c181c07abf9ccc0e60743a6cd15c17bd2b01afb2bc9e12cfa24146841eed6f",
+      "category": "docs"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_llava_1_5_13b_metrics_bleurt.json",
+      "bytes": 12981,
+      "sha256": "d129c4a100591d423152ec11272457b0aea64d2fa8f2466df39917a392e62b7b",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_llava_1_5_13b_report_bleurt.md",
+      "bytes": 2500,
+      "sha256": "ac0528b9a47d12cf0ee47f08ff48b33cd481e3d072710e5bc3b244133ecd97b3",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_llava_1_5_13b_responses.json",
+      "bytes": 2328467,
+      "sha256": "e49506ce709c91e9b5c9c52b171957d70755d54e2a8046db0c8eb0a15b29c3b7",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_model_summary.md",
+      "bytes": 6967,
+      "sha256": "1e5016054d825174ef9370e54cfd22a394a2e796351fd68805c8bcf4f64f5d4f",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_30b_a3b_metrics_bleurt.json",
+      "bytes": 13230,
+      "sha256": "18601584d3620781ed2901e551f2b1bb77de00ee21848a68effae965e6af5470",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_30b_a3b_report_bleurt.md",
+      "bytes": 2538,
+      "sha256": "0b00b495fc62c5a14111d380e90542514c0bd72c6afce8399a7fe766aa5a13ca",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_30b_a3b_responses.json",
+      "bytes": 2304569,
+      "sha256": "06b2aa080a55972056772a89d17b2a0f2fd310bad4c723f8c6b578e43fb6331c",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_32b_metrics_bleurt.json",
+      "bytes": 13214,
+      "sha256": "2f01c50733d59e16e86b617522969bec7050445c0b6ec218545bad9471f230f0",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_32b_report_bleurt.md",
+      "bytes": 2534,
+      "sha256": "102d0ef0afbdd40b4898cab8fe0256ae221298edc76c5dbfc60d36fb0e1fd071",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_32b_responses.json",
+      "bytes": 2416692,
+      "sha256": "5ec693f84d12c08d2726f89d1466f66ed2822d42cc9d75854b4e85eefce95232",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_8b_metrics_bleurt.json",
+      "bytes": 13211,
+      "sha256": "8f918f5d81d2c66f1207240aa430577051558832e180e6a32fee9b9889e0946c",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_8b_report_bleurt.md",
+      "bytes": 2534,
+      "sha256": "b197560e573a8c0ff5f5ef1293ad9168994ce33039d8e5e79bbe2dfb5f2a423f",
+      "category": "results"
+    },
+    {
+      "path": "results/waymo_validation_balanced_diverse_70hard_option_balanced_qwen3vl_8b_responses.json",
+      "bytes": 2310284,
+      "sha256": "428b7dc958a473d8fe9194feb673ae371d53bfc1271e19c85c2ab89a8243e6f6",
+      "category": "results"
+    },
+    {
+      "path": "scripts/evaluation/run_qwen3vl_30b_a3b_option_balanced.sh",
+      "bytes": 982,
+      "sha256": "d91f7f982f12dffa4b3279c86ea09b89dff0e94a90f2c98c517f682c2e855e38",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/evaluation/run_qwen3vl_32b_option_balanced.sh",
+      "bytes": 962,
+      "sha256": "d81c63c1b0918f8969ba1cf518527b9359a9f01d9ef44429fc06f5c6a00f5891",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/evaluation/run_waymo_full_set_vllm.py",
+      "bytes": 544,
+      "sha256": "91f68efeb30d224bf8637f4ad5c3069df1ab3c75cca385f45d824394f6d3e90a",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/evaluation/run_waymo_miniset_vllm.py",
+      "bytes": 18777,
+      "sha256": "75b272e361f9eb80264dd7609c7944d4b78c3aa7ce2390511cf5817b105729ad",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/evaluation/score_waymo_full_set.py",
+      "bytes": 794,
+      "sha256": "ed60bbf877d8ef0c17571563d0bedd4520732fdee1706e8b935ca85ef2ac2693",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/evaluation/score_waymo_miniset_mcq.py",
+      "bytes": 30487,
+      "sha256": "f465e9ddd7fa1054fae0aa584e903dd99b571820db7341b315d193a3643e150f",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/generation/build_waymo_5frame_bundles.py",
+      "bytes": 12181,
+      "sha256": "7226ca2bc12c1179e2b7c4d571824e1a028934758ddd9cc3a6b87ab72e5b1f58",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/generation/export_waymo_front_images.py",
+      "bytes": 14491,
+      "sha256": "893d23abe4dd03118853b0dfc06c759bbacfc662aa3e4631b0e61d4dd6497e55",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/generation/generate_waymo_e2e_5frame_gt.py",
+      "bytes": 36699,
+      "sha256": "f2a511865f8dffff4a896e7ab8a620ca4fabb4e4d6fad0f03b9c86ec4c7563c8",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/generation/merge_review_records_into_gt.py",
+      "bytes": 12070,
+      "sha256": "429d2cc868f19f88a11a291d98952a188d3a31f40056287d3e369770fc7c1520",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/generation/merge_trj9_explanations_into_gt.py",
+      "bytes": 8116,
+      "sha256": "c624f04f9b806f9de9ec27cce5f2576a0366b08b152247250309ee30884b9393",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/selection/build_waymo_validation_full_set.py",
+      "bytes": 13078,
+      "sha256": "c7d3ae6396425ba5935db37b688b1ca74057f6857e0de6d39ddd655c9c53c69a",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/selection/rebalance_mcq_option_letters.py",
+      "bytes": 7711,
+      "sha256": "ff76f9df5a6a1918b409ee02ffe8bdc82e3ff45af40f71374de6c601472d031c",
+      "category": "scripts"
+    },
+    {
+      "path": "scripts/selection/select_miniset_from_full_results.py",
+      "bytes": 29068,
+      "sha256": "76b4283a0ce2a2633d2e575c4421693d25dab0423eb7d4ee9cbb3ed8ba91de90",
+      "category": "scripts"
+    }
+  ]
+}

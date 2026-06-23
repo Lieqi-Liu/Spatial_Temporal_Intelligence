@@ -1,0 +1,298 @@
+{
+  "metadata": {
+    "dataset": "waymo_validation",
+    "benchmark": "waymo_validation_selected_miniset_from_full_results",
+    "created_at_utc": "2026-06-23T03:45:21.830583+00:00",
+    "questions_json": "/home/rgao727/Spatial_Temporal_Intelligence/waymo_test/full_set/waymo_validation_full_set_questions.json",
+    "responses_json": "/home/rgao727/Spatial_Temporal_Intelligence/waymo_test/full_set/waymo_validation_full_set_vlm_responses.json",
+    "per_question_type": 100,
+    "seed": 727,
+    "policy": "balanced-diverse-hard",
+    "difficulty_weight": 0.6,
+    "complexity_weight": 1.2,
+    "diversity_weight": 2.0,
+    "max_simple_ratio": 0.25,
+    "mcq_hard_ratio": 0.7,
+    "mcq_correct_ratio": 0.3,
+    "scenario_soft_cap_ratio": 0.25,
+    "allow_missing_responses": false,
+    "notes": [
+      "Selection is per question type, targeting 100 rows each.",
+      "Balanced-diverse-hard policy prioritizes scene novelty, scenario/GT diversity, and complex/corner-case scene keywords, with a moderate hard-example quota.",
+      "TRJ-10 ground-truth text is normalized back to an option key when it exactly matches one of the options."
+    ],
+    "option_rebalanced_from": "/home/rgao727/Spatial_Temporal_Intelligence/waymo_test/miniset_version/waymo_validation_balanced_diverse_70hard_miniset_from_full_results.json",
+    "option_rebalanced_at_utc": "2026-06-23T04:10:59.330251+00:00",
+    "option_rebalance_method": "permute MCQ choices so correct option letters are near-even within each question type"
+  },
+  "total_questions": 2400,
+  "per_question_type_counts": {
+    "SC-1": 100,
+    "SC-2": 100,
+    "SC-3": 100,
+    "SC-4": 100,
+    "SP-2": 100,
+    "SP-3": 100,
+    "SP-3a": 100,
+    "TE-1": 100,
+    "TE-2": 100,
+    "TE-4": 100,
+    "TE-5": 100,
+    "TM-2": 100,
+    "TM-3": 100,
+    "TM-5": 100,
+    "TRJ-1": 100,
+    "TRJ-10": 100,
+    "TRJ-2": 100,
+    "TRJ-3": 100,
+    "TRJ-4": 100,
+    "TRJ-5": 100,
+    "TRJ-6": 100,
+    "TRJ-7": 100,
+    "TRJ-8": 100,
+    "TRJ-9": 100
+  },
+  "changed_rows": 1437,
+  "unresolved_mcq_rows": 0,
+  "before_correct_option_distribution_by_question_type": {
+    "SC-1": {
+      "A": 31,
+      "B": 25,
+      "C": 25,
+      "D": 19
+    },
+    "SC-2": {
+      "A": 13,
+      "B": 6,
+      "C": 52,
+      "D": 2,
+      "E": 27
+    },
+    "SC-3": {
+      "A": 30,
+      "B": 31,
+      "D": 39
+    },
+    "SP-2": {
+      "A": 74,
+      "B": 13,
+      "C": 13
+    },
+    "SP-3": {
+      "A": 2,
+      "B": 32,
+      "C": 28,
+      "D": 22,
+      "E": 16
+    },
+    "TE-1": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "TE-2": {
+      "A": 31,
+      "B": 14,
+      "C": 14,
+      "D": 15,
+      "E": 26
+    },
+    "TE-4": {
+      "A": 18,
+      "B": 17,
+      "C": 18,
+      "D": 17,
+      "E": 18,
+      "F": 12
+    },
+    "TE-5": {
+      "B": 33,
+      "D": 33,
+      "E": 34
+    },
+    "TM-2": {
+      "A": 77,
+      "B": 9,
+      "C": 14
+    },
+    "TM-3": {
+      "A": 20,
+      "B": 16,
+      "C": 17,
+      "D": 13,
+      "E": 13,
+      "F": 21
+    },
+    "TM-5": {
+      "A": 24,
+      "B": 27,
+      "C": 25,
+      "D": 24
+    },
+    "TRJ-1": {
+      "A": 62,
+      "F": 38
+    },
+    "TRJ-10": {
+      "A": 29,
+      "B": 24,
+      "C": 22,
+      "D": 25
+    },
+    "TRJ-2": {
+      "A": 55,
+      "B": 1,
+      "C": 5,
+      "F": 39
+    },
+    "TRJ-3": {
+      "B": 59,
+      "C": 1,
+      "F": 40
+    },
+    "TRJ-4": {
+      "A": 3,
+      "B": 31,
+      "C": 23,
+      "D": 43
+    },
+    "TRJ-8": {
+      "A": 34,
+      "B": 32,
+      "C": 34
+    }
+  },
+  "after_correct_option_distribution_by_question_type": {
+    "SC-1": {
+      "A": 25,
+      "B": 25,
+      "C": 25,
+      "D": 25
+    },
+    "SC-2": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "SC-3": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "SP-2": {
+      "A": 13,
+      "B": 13,
+      "C": 13,
+      "D": 13,
+      "E": 12,
+      "F": 12,
+      "G": 12,
+      "H": 12
+    },
+    "SP-3": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "TE-1": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "TE-2": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "TE-4": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TE-5": {
+      "A": 20,
+      "B": 20,
+      "C": 20,
+      "D": 20,
+      "E": 20
+    },
+    "TM-2": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TM-3": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TM-5": {
+      "A": 25,
+      "B": 25,
+      "C": 25,
+      "D": 25
+    },
+    "TRJ-1": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TRJ-10": {
+      "A": 25,
+      "B": 25,
+      "C": 25,
+      "D": 25
+    },
+    "TRJ-2": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TRJ-3": {
+      "A": 17,
+      "B": 17,
+      "C": 17,
+      "D": 17,
+      "E": 16,
+      "F": 16
+    },
+    "TRJ-4": {
+      "A": 25,
+      "B": 25,
+      "C": 25,
+      "D": 25
+    },
+    "TRJ-8": {
+      "A": 34,
+      "B": 33,
+      "C": 33
+    }
+  }
+}
