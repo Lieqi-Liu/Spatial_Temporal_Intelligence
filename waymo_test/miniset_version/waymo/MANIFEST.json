@@ -1,12 +1,12 @@
 {
   "name": "waymo_validation_balanced_diverse_70hard_option_balanced_miniset_release",
   "total_files": 34,
-  "total_bytes": 24109361,
+  "total_bytes": 24114691,
   "files": [
     {
       "path": "README.md",
-      "bytes": 4006,
-      "sha256": "ed4271a69fb31f3310f067b71d0b6a83a234800342302657911ecf641f27aeec",
+      "bytes": 6756,
+      "sha256": "5abc7079142edb1c97e35128d501086d3f1629e83b01ad347eb38a70fdcc0500",
       "category": "root"
     },
     {
@@ -41,8 +41,8 @@
     },
     {
       "path": "docs/waymo_miniset_dataset_card.md",
-      "bytes": 3919,
-      "sha256": "76c181c07abf9ccc0e60743a6cd15c17bd2b01afb2bc9e12cfa24146841eed6f",
+      "bytes": 6499,
+      "sha256": "5cfcbf6af7f5b4a36d2c8f4ff9fc29722bf07052e498156d200b9d02574c7cec",
       "category": "docs"
     },
     {

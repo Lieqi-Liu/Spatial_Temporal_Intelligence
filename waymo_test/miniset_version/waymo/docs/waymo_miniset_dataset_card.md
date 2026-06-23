@@ -10,6 +10,22 @@ The final benchmark is:
 
 It contains 2,400 total questions, with 100 examples for each of 24 question types.
 
+| Property | Value |
+|---|---:|
+| Total questions | 2,400 |
+| Question types | 24 |
+| Questions per type | 100 |
+| MCQ questions | 1,800 |
+| FRQ / numeric questions | 600 |
+
+| Task Family | Question Types | Count |
+|---|---|---:|
+| Scenario / corner-case reasoning | `SC-1`, `SC-2`, `SC-3`, `SC-4` | 400 |
+| Spatial perception | `SP-2`, `SP-3`, `SP-3a` | 300 |
+| Temporal extrapolation | `TE-1`, `TE-2`, `TE-4`, `TE-5` | 400 |
+| Temporal memory | `TM-2`, `TM-3`, `TM-5` | 300 |
+| Trajectory prediction / reasoning | `TRJ-1`, `TRJ-2`, `TRJ-3`, `TRJ-4`, `TRJ-5`, `TRJ-6`, `TRJ-7`, `TRJ-8`, `TRJ-9`, `TRJ-10` | 1,000 |
+
 ## Data Source
 
 The questions were derived from Waymo validation front-camera visual clips and associated metadata. The image files are not included in this release. The JSON keeps the original local image paths used during generation and evaluation.
@@ -23,6 +39,23 @@ For most temporal, spatial, and trajectory questions, the visual context uses 5 
 - `TE-1`, `TE-2`, `TE-4`, `TE-5`: temporal extrapolation
 - `TM-2`, `TM-3`, `TM-5`: temporal memory
 - `TRJ-1`, `TRJ-2`, `TRJ-3`, `TRJ-4`, `TRJ-5`, `TRJ-6`, `TRJ-7`, `TRJ-8`, `TRJ-9`, `TRJ-10`: trajectory prediction, trajectory choice, and trajectory explanation
+
+MCQ types:
+
+- `SC-1`, `SC-2`, `SC-3`
+- `SP-2`, `SP-3`
+- `TE-1`, `TE-2`, `TE-4`, `TE-5`
+- `TM-2`, `TM-3`, `TM-5`
+- `TRJ-1`, `TRJ-2`, `TRJ-3`, `TRJ-4`, `TRJ-8`, `TRJ-10`
+
+FRQ / numeric types:
+
+- `SC-4`: free-form scene-level reasoning
+- `SP-3a`: numeric spatial distance
+- `TRJ-5`: future trajectory coordinates, 5 future points
+- `TRJ-6`: future trajectory coordinates conditioned on the first future point
+- `TRJ-7`: free-form future trajectory description
+- `TRJ-9`: free-form explanation of the selected trajectory
 
 ## Final Selection Procedure
 
@@ -73,6 +106,31 @@ Two human-review JSON files are included:
 
 The final benchmark JSON also embeds relevant review metadata in `hidden_metadata`.
 
+Manual review coverage in the final miniset:
+
+| Review Source | Question Types | Reviewed Rows |
+|---|---|---:|
+| Scene-summary review | `SC-1`, `SC-2`, `SC-3`, `SC-4` | 400 |
+| SC/TRJ label review | `SC-1`, `TRJ-8`, `TRJ-9`, `TRJ-10` | 301 |
+
+Scene-summary review counts:
+
+| Question Type | Approved | Revised Approved | Total |
+|---|---:|---:|---:|
+| `SC-1` | 30 | 70 | 100 |
+| `SC-2` | 28 | 72 | 100 |
+| `SC-3` | 25 | 75 | 100 |
+| `SC-4` | 27 | 73 | 100 |
+
+SC/TRJ label review counts:
+
+| Question Type | Approved | Revised Approved | Total |
+|---|---:|---:|---:|
+| `SC-1` | 23 | 77 | 100 |
+| `TRJ-8` | 1 | 0 | 1 |
+| `TRJ-9` | 98 | 2 | 100 |
+| `TRJ-10` | 4 | 96 | 100 |
+
 ## Evaluation Outputs
 
 Model outputs and metrics are in `results/`.
@@ -96,6 +154,25 @@ Metrics include:
 The aggregate report is:
 
 `results/waymo_validation_balanced_diverse_70hard_option_balanced_model_summary.md`
+
+Overall results:
+
+| Model | MCQ Accuracy | Random Baseline | Invalid Rate | BLEURT Mean |
+|---|---:|---:|---:|---:|
+| LLaVA 1.5 13B | 32.61% | 20.32% | 0.00% | -0.2929 |
+| Qwen3-VL 8B | 35.17% | 20.32% | 0.00% | -0.3476 |
+| Qwen3-VL 30B-A3B | 34.00% | 20.32% | 0.00% | -0.3173 |
+| Qwen3-VL 32B | 40.33% | 20.32% | 0.00% | -0.3449 |
+
+Per-task MCQ accuracy:
+
+| Task | LLaVA 1.5 13B | Qwen3-VL 8B | Qwen3-VL 30B-A3B | Qwen3-VL 32B |
+|---|---:|---:|---:|---:|
+| Scenario / corner-case | 38.00% | 38.00% | 34.00% | 37.33% |
+| Spatial perception | 35.50% | 42.50% | 26.50% | 59.00% |
+| Temporal extrapolation | 24.75% | 27.25% | 29.50% | 29.50% |
+| Temporal memory | 25.00% | 26.67% | 29.67% | 31.00% |
+| Trajectory prediction / reasoning | 38.00% | 40.83% | 41.67% | 47.50% |
 
 ## Reuse Notes
 
